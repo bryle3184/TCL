@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TCL Live Host Calendar</title>
+  <link rel="stylesheet" href="calendar.css">
+</head>
+<body>
+  <header>
+    <h1>TCL | Employee Leave Calendar</h1>
+  </header>
+
+  <main>
+    <section class="calendar-controls">
+      <button onclick="prevMonth()">&lt;</button>
+      <h2 id="monthYear"></h2>
+      <button onclick="nextMonth()">&gt;</button>
+    </section>
+
+    <section class="calendar" id="calendar">
+      <!-- Calendar days will be generated here -->
+    </section>
+  </main>
+
+  <div id="eventModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Add/Edit Name</h2>
+      <form id="eventForm">
+        <input type="text" placeholder="Employee Name" id="host" required />
+        <input type="text" placeholder="Reason" id="topic" required />
+        <input type="text" id="eventDate">
+        <button type="submit">Save</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="tcl_calendar.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TCL | Customer Service Dashboard</title>
+  <link rel="stylesheet" href="csr-style.css">
+</head>
+<body>
+  <header>
+    <h1>TCL | Customer Service Dashboard</h1>
+  </header>
+
+  <section class="filters">
+    <select id="statusFilter">
+      <option value="all">All Statuses</option>
+      <option value="Open">Open</option>
+      <option value="In Progress">In Progress</option>
+      <option value="Resolved">Resolved</option>
+    </select>
+    <input type="text" id="searchInput" placeholder="Search by customer name or issue">
+    <button onclick="applyFilters()">Apply Filters</button>
+  </section>
+
+  <section class="summary">
+    <div>Total Tickets: <span id="totalCount">0</span></div>
+    <div>Open: <span id="openCount">0</span></div>
+    <div>In Progress: <span id="progressCount">0</span></div>
+    <div>Resolved: <span id="resolvedCount">0</span></div>
+  </section>
+
+  <section class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Customer</th>
+          <th>Concern</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="csrBody"></tbody>
+    </table>
+  </section>
+
+  <script src="csr-script.js"></script>
+</body>
+</html>

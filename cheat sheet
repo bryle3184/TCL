@@ -1,0 +1,29 @@
+
+
+access database
+use <db>
+
+
+find
+db.<collection>.find()
+db.<collection>.find({name:'bryle'})
+
+
+insert
+db.<collection>.insertOne({name:'bryle', age:21})
+db.<collection>.insertMany([{name:'bryle', age:21}, {name:'kaylla', age:21}])
+
+
+update
+db.<collection>.updateOne({name:'bryle'}, {$set:{age:22}})
+db.<collection>.updateMany({name:'bryle, name:'kaylla'}, {$set:{age:22}})
+
+delete
+db.<collection>.deleteOne({name:'bryle'})
+
+
+
+
+
+
+

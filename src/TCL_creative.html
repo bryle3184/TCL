@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Creative Asset Tracker</title>
+  <link rel="stylesheet" href="TCL_creativestyles.css">
+</head>
+<body>
+  <header>
+    <h1>Creative Asset Tracker</h1>
+  </header>
+
+  <section class="filters">
+    <select id="platformFilter">
+      <option value="all">All Platforms</option>
+      <option value="Shopee">Shopee</option>
+      <option value="TikTok">TikTok</option>
+      <option value="Lazada">Lazada</option>
+    </select>
+
+    <select id="statusFilter">
+      <option value="all">All Statuses</option>
+      <option value="Pending">Pending</option>
+      <option value="In Design">In Design</option>
+      <option value="For Approval">For Approval</option>
+      <option value="Done">Done</option>
+    </select>
+
+    <input type="text" id="searchInput" placeholder="Search by campaign...">
+  </section>
+
+  <section class="asset-list" id="assetList">
+    <!-- Task items will be inserted here by JS -->
+  </section>
+
+  <section class="upload-section">
+    <h2>Upload New Creative Request</h2>
+    <form id="uploadForm">
+      <input type="text" placeholder="Campaign Name" required>
+      <select required>
+        <option disabled selected>Choose Platform</option>
+        <option>Shopee</option>
+        <option>TikTok</option>
+        <option>Lazada</option>
+      </select>
+      <select required>
+        <option disabled selected>Choose Status</option>
+        <option>Pending</option>
+        <option>In Design</option>
+        <option>For Approval</option>
+        <option>Done</option>
+      </select>
+      <input type="file" required>
+      <button type="submit">Upload</button>
+    </form>
+  </section>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th><input type="checkbox" /></th>
+          <th>Campaign Name</th>
+          <th>Platform</th>
+          <th>Status</th>
+          <th>File</th>
+          <th>Operation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="checkbox" /></td>
+          <td>Valentine Promo Banner</td>
+          <td>Shopee</td>
+          <td><span class="status pending">Pending</span></td>
+          <td>banner-valentine.png</td>
+          <td><a href="#">Detail</a></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" /></td>
+          <td>Midyear Sale Ad</td>
+          <td>TikTok</td>
+          <td><span class="status in-design">In Design</span></td>
+          <td>midyear-video.mp4</td>
+          <td><a href="#">Detail</a></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" /></td>
+          <td>Lazada Payday Poster</td>
+          <td>Lazada</td>
+          <td><span class="status approval">For Approval</span></td>
+          <td>poster-payday.pdf</td>
+          <td><a href="#">Detail</a></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" /></td>
+          <td>Back to School Visual</td>
+          <td>Shopee</td>
+          <td><span class="status done">Done</span></td>
+          <td>b2school.jpg</td>
+          <td><a href="#">Detail</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script src="creative-script.js"></script>
+</body>
+</html>

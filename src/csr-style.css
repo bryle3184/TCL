@@ -1,0 +1,84 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  background-color: #f7f7f7;
+}
+
+header {
+  background-color: red;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  padding: 20px;
+  background-color: white;
+}
+
+.filters input,
+.filters select,
+.filters button {
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.filters button {
+  background-color: red;
+  color: white;
+  cursor: pointer;
+  border: none;
+}
+
+.summary {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 15px;
+  background: #fff;
+  font-weight: bold;
+}
+
+.table-container {
+  padding: 0 20px 40px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+thead {
+  background-color: #f2f2f2;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.status {
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 13px;
+  color: white;
+  display: inline-block;
+}
+
+.Open { background-color: #e67e22; }
+.InProgress { background-color: #3498db; }
+.Resolved { background-color: #2ecc71; }
+
+a {
+  color: #007bff;
+  text-decoration: none;
+}

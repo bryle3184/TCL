@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TCL | Payout Tracker</title>
+  <link rel="stylesheet" href="tclpayout.css">
+</head>
+<body>
+  <header>
+    <h1>TCL | Influencer Payout Tracker</h1>
+  </header>
+
+  <section class="filters">
+    <input type="text" id="nameFilter" placeholder="Filter by influencer name">
+    <input type="text" id="campaignFilter" placeholder="Filter by campaign name">
+    <input type="date" id="dateFilter">
+    <button onclick="applyFilters()">Apply Filters</button>
+  </section>
+
+  <section class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Influencer</th>
+          <th>Campaign</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="payoutBody">
+        <!-- Table rows will be generated here -->
+      </tbody>
+    </table>
+  </section>
+
+  <script src="tclpayout.js"></script>
+</body>
+</html>

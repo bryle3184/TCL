@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCL Appliances - Task Management System</title>
+    <link rel="stylesheet" href="TCLstyles.css">
+</head>
+<body>
+    <header>
+        <div class="logo" id="tcl">TCL Appliances</div> <a id="logout" href="login_TCL.html">Logout</a>
+        <nav>
+            <ul>
+                <button id="btns">Dashboard</button>
+                <button id="btns">Creative Asset Tracker</button>
+                <button id="btns">Calendar</button>
+                <button id="btns">Leave Calendar</button>
+                <button id="btns">Payout Tracker</button>
+                <button id="btns">Customer Service</button>
+            </ul>
+        </nav>
+    </header>
+ 
+    <main>
+        <section class="dashboard">
+            <h1>Welcome to the Task Management System</h1>
+            <div class="task-card">
+    <h2 id="upcoming">Upcoming Tasks</h2>
+    <button id="task" onclick="addtask()">Add Task</button>
+    <ul>
+        <li id="tasks" class="task-item">Task 1 - Due Tomorrow</li>
+        <li id="tasks" class="task-item">Task 2 - Pending Approval</li>
+        <li id="tasks" class="task-item">Task 3 - In Progress</li>
+    </ul>
+</div>
+
+<div class="calendar-card">
+    <h2 id="upcoming">Upcoming Livestreams </h2>
+    <button id="live" onclick="addlive()">Add Live</button>
+    <ul>
+        <li id="tasks" class="task-item">Session 1 - Shopee - 10:00 AM</li>
+        <li id="tasks" class="task-item">Session 2 - TikTok - 1:00 PM</li>
+    </ul>
+</div>
+
+
+<!-- Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3 id="cripply">Edit Task</h3>
+        <input type="text" id="taskText" placeholder="Task">
+        <input type="datetime-local" id="taskText" placeholder="Deadline">
+        
+        <button id="saveTask">Save</button>
+    </div>
+</div>
+
+
+
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 TCL Appliances | All Rights Reserved</p>
+    </footer>
+    
+    <script src="scripts.js"></script>
+
+
+    <script>
+
+    const modal = document.getElementById('editModal');
+    const closeModal = document.querySelector('.close');
+    const input = document.getElementById('taskText');
+    const saveBtn = document.getElementById('saveTask');
+    let currentTask = null;
+
+    const cripply = document.getElementById('cripply')
+
+    function addtask(){
+        modal.style.display = 'block';
+        saveBtn.textContent = 'Add Task';
+        cripply.textContent = 'Add Task';
+    }
+
+    function addlive(){
+        modal.style.display = 'block';
+        saveBtn.textContent = 'Add Live';
+        cripply.textContent = 'Add Live';
+    }
+
+    document.querySelectorAll('.task-item').forEach(item => {
+        item.addEventListener('click', () => {
+            currentTask = item;
+            input.value = item.textContent;
+            modal.style.display = 'block';
+            cripply.textContent = 'Edit Task';
+            saveBtn.textContent = 'Save';
+        });
+    });
+
+    closeModal.onclick = function() {
+        modal.style.display = 'none';
+    }
+
+    window.onclick = function(e) {
+        if (e.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    saveBtn.addEventListener('click', () => {
+        if (currentTask && input.value.trim() !== '') {
+            currentTask.textContent = input.value;
+            modal.style.display = 'none';
+        }
+    });
+
+    
+</script>
+
+</body>
+</html>

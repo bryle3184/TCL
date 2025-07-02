@@ -1,0 +1,219 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+header {
+    background-color: red;
+    color: white;
+    padding: 15px 0;
+    text-align: center;
+}
+
+header .logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+nav ul {
+    list-style: none;
+    padding: 10px 0;
+    
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: #32374d;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+main {
+    padding: 30px;
+}
+
+.dashboard {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.dashboard .task-card,
+.dashboard .calendar-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 45%;
+}
+
+h1 {
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+
+ul {
+    list-style: none;
+}
+
+button {
+    padding: 10px;
+    background-color: #f9f9f9;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+input {
+    padding: 15px;
+    background-color: #f9f9f9;
+    margin-bottom: 10px;
+    border-radius: 4px;
+     margin-left: 1% ;
+}
+ul li {
+    padding: 10px;
+    background-color: #f9f9f9;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+ul li:nth-child(even) {
+    background-color: #ffe6e6;
+}
+
+footer {
+    background-color: red;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
+
+#task {
+
+
+background-color: red;
+ color: white;
+ margin-left: 43.5% ;
+ display: inline-flex;
+}
+
+#btns:hover{
+    background-color: red;
+}
+
+#btns:active{
+    background-color: black;
+}
+
+#task:hover{
+    background-color: black;
+}
+
+#task:active{
+    background-color: white;
+}
+
+#tasks:hover{
+    background-color: red;
+    cursor: pointer;
+}
+
+#tasks:active{
+    background-color: black;
+}
+
+#live:hover{
+    background-color: black;
+}
+
+#live:active{
+    background-color: white;
+}
+#upcoming{
+    display: inline-flex;
+}
+
+#tcl{
+    display: inline-flex;
+}
+#live {
+
+
+background-color: red;
+ color: white;
+ margin-left: 30% ;
+}
+
+#logout {
+ color: white;
+ margin-left: 95% ;
+ display: inline-flex;
+}
+
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    width: 300px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.close {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+#cripply{
+    margin-bottom: 5%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
