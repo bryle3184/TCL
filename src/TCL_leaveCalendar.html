@@ -1,14 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" href="favicon.ico" type="image/ico">
   <meta charset="UTF-8">
   <title>TCL Live Host Calendar</title>
   <link rel="stylesheet" href="calendar.css">
 </head>
 <body>
   <header>
-    <h1>TCL | Employee Leave Calendar</h1>
+    <img src="menu1.png" height="50px" align="left" id="menuToggle">
+    <h1>TCL Employee Leave Calendar</h1>
+    </div>
   </header>
+
+   <div id="sidebar" class="sidebar hidden">
+    <img src="tcl_logo.png" height="50px" id="tclogo" align="right"><br> <br>
+  <ul>
+    <li><a href="TCL_index.html">Dashboard</a></li>
+    <li><a href="TCL_creative.html">Creative Asset Tracker</a></li>
+    <li><a href="TCLcalendar.html">Calendar</a></li>
+    <li><a href="TCL_leaveCalendar.html">Leave Calendar</a></li>
+    <li> <a href="digitalmarket.html">Digital Market Tracker</a></li>
+    <li><a href="TCLpayout.html">Payout Tracker</a></li>
+    <li><a href="TCLcsr.html">Customer Service</a></li>
+  
+  <a href="login_TCL.html"> <img src="logout.png" height="50px" id="logoutICON" > </a>
+  </div>
 
   <main>
     <section class="calendar-controls">
@@ -34,6 +51,26 @@
       </form>
     </div>
   </div>
+
+
+  
+  <script>
+  const menuBtn = document.getElementById("menuToggle");
+  const sidebar = document.getElementById("sidebar");
+
+  // Show sidebar on image click
+  menuBtn.addEventListener("click", (e) => {
+    e.stopPropagation(); // Prevent body click from firing
+    sidebar.classList.remove("hidden");
+  });
+
+  // Hide sidebar if clicked outside
+  document.body.addEventListener("click", (e) => {
+    if (!sidebar.contains(e.target) && e.target !== menuBtn) {
+      sidebar.classList.add("hidden");
+    }
+  });
+</script>
 
   <script src="tcl_calendar.js"></script>
 </body>

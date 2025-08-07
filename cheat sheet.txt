@@ -1,0 +1,145 @@
+
+database mongosh cheat sheet
+
+access database
+use <db>
+
+
+find
+db.collection.find()
+db.collection.find({})
+
+
+insert
+db.collection.insertOne({})
+db.collection.insertMany([{}, {}])
+
+
+update
+db.collection.updateOne({}, {$set:{}})
+db.collection.updateMany({}, {$set:{}})
+db.collection.updateMany({sample:{$exists:false}}, {$set:{sample:true}})
+
+delete
+db.collection.deleteOne({})
+
+
+----------------------------------------------------------------------------------------------------------------
+
+Javascript CRUD server
+
+----------------------------------------------------------------------------------------------------------------
+
+default setup
+
+const express = require('express')
+const path = require('path')
+const mongoose = require('mongoose')
+const dotenv = require('dotenv')
+const multer = require('multer')
+
+const app = express()
+
+dotenv.config()
+
+const mongurl = process.env.MONGO_URL
+
+mongoose.connect(mongurl).then(()=>{console.log('Database Connected!')})
+
+app.listen(5000, () => {
+    console.log('Server Ready! port:5000')
+})
+
+----------------------------------------------------------------------------------------------------------------
+
+javascript send data function
+
+async function name(){
+var = textbox.value
+
+    data = {
+        task: var
+    }
+
+    jsonData = JSON.stringify(data)
+        xhr = new XMLHttpRequest()
+        xhr.open("POST", "", true)
+        xhr.setRequestHeader("Content-type", "application/json")
+        xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200){
+        console.log('Data Sent Successfully')
+        }
+    }
+
+xhr.send(jsonData)
+location.reload()
+
+}
+
+----------------------------------------------------------------------------------------------------------------
+
+read
+
+app.get('', async(req, res) => {
+    const data = await model.find()
+
+    console.log(data)
+
+    res.json(data)
+})
+
+----------------------------------------------------------------------------------------------------------------
+
+create
+
+app.post('', async(req, res)=>{
+    const {} = req.body
+
+    const data = await model.insertOne({})
+    console.log(data)
+    res.redirect('')
+})
+
+----------------------------------------------------------------------------------------------------------------
+
+update
+
+app.post('', async(req, res)=>{
+    console.log('received: ', req.body)
+    const {} = req.body
+
+    const data = await model.updateOne({}, {$set:{}})
+    console.log(data)
+    res.redirect('')
+})
+
+----------------------------------------------------------------------------------------------------------------
+
+delete
+
+app.post('', async(req, res)=>{
+    console.log('received: '+ req.body)
+    const {} = req.body
+
+    const data = await model.deleteOne({})
+    console.log(data)
+    res.redirect('')
+})
+
+----------------------------------------------------------------------------------------------------------------
+
+create schema and models
+
+const schema = new mongoose.Schema({
+    username: String,
+    password: String,
+    name: String,
+    birthday: String
+})
+
+const model1 = mongoose.model('accounts', schema)
+
+----------------------------------------------------------------------------------------------------------------
+
+
+

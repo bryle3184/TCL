@@ -1,14 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" href="favicon.ico" type="image/ico">
   <meta charset="UTF-8">
-  <title>TCL | Customer Service Dashboard</title>
+  <title>TCL Customer Service Dashboard</title>
   <link rel="stylesheet" href="csr-style.css">
 </head>
 <body>
   <header>
-    <h1>TCL | Customer Service Dashboard</h1>
+    <img src="menu1.png" height="50px" align="left" id="menuToggle">
+    <h1>TCL Customer Service Dashboard</h1>
+    </div>
   </header>
+  
+  <div id="sidebar" class="sidebar hidden">
+    <img src="tcl_logo.png" height="50px" id="tclogo" align="right"><br> <br>
+  <ul>
+    <li><a href="TCL_index.html">Dashboard</a></li>
+    <li><a href="TCL_creative.html">Creative Asset Tracker</a></li>
+    <li><a href="TCLcalendar.html">Calendar</a></li>
+    <li> <a href="digitalmarket.html">Digital Market Tracker</a></li>
+    <li><a href="TCLpayout.html">Payout Tracker</a></li>
+    <li><a href="TCLcsr.html">Customer Service</a></li>
+  
+  <a href="index.html"> <img src="logout.png" height="50px" id="logoutICON" > </a>
+  </div>
+  
+  <section class="add-concern">
+  <h3>Add Customer Concern</h2>
+  <input type="text" id="customerInput" placeholder="Customer Name">
+ <select id="concernInput" onchange="toggleOtherInput()">
+  <option value="" disabled selected>Select a concern</option>
+  <option value="warranty">Warranty</option>
+  <option value="repair">Repair</option>
+  <option value="installation">Installation</option>
+  <option value="follow-up">Follow-up</option>
+  <option value="others">Others</option>
+</select>
+
+<input type="text" id="otherConcernInput" placeholder="Enter other concern" style="display:none;">
+<input type="text" id="chatLinkInput" placeholder="Chat Link (e.g. Messenger, Viber)">
+
+
+  <button onclick="addConcern()">Add Concern</button>
+</section>
+
 
   <section class="filters">
     <select id="statusFilter">
@@ -28,6 +64,8 @@
     <div>Resolved: <span id="resolvedCount">0</span></div>
   </section>
 
+  
+
   <section class="table-container">
     <table>
       <thead>
@@ -43,6 +81,229 @@
     </table>
   </section>
 
-  <script src="csr-script.js"></script>
+  
+ 
+ <script>
+  const menuBtn = document.getElementById("menuToggle");
+  const sidebar = document.getElementById("sidebar");
+
+  // Show sidebar on image click
+  menuBtn.addEventListener("click", (e) => {
+    e.stopPropagation(); // Prevent body click from firing
+    sidebar.classList.remove("hidden");
+  });
+
+  // Hide sidebar if clicked outside
+  document.body.addEventListener("click", (e) => {
+    if (!sidebar.contains(e.target) && e.target !== menuBtn) {
+      sidebar.classList.add("hidden");
+    }
+  });
+</script>
+  <script>
+const tickets = [];
+
+async function fetchData(){
+  const res = await fetch('/api/customers.html')
+  const data = await res.json()
+
+  for (let index = 0; index < data.length; index++) {
+    const newTicket = {
+      id: data[index]._id,
+      customer: data[index].customer,
+      concern: data[index].concern,
+      date: data[index].date,
+      status: data[index].status,
+      chatlink: data[index].chatlink
+    }
+
+    tickets.push(newTicket)
+
+    displayRows()
+  }
+}
+
+fetchData()
+
+function mapStatusClass(status) {
+  return {
+    "Open": "Open",
+    "In Progress": "InProgress",
+    "Resolved": "Resolved"
+  }[status] || "";
+}
+
+function updateSummary(filtered) {
+  const total = filtered.length;
+  const open = filtered.filter(t => t.status === "Open").length;
+  const inProgress = filtered.filter(t => t.status === "In Progress").length;
+  const resolved = filtered.filter(t => t.status === "Resolved").length;
+
+  document.getElementById("totalCount").innerText = total;
+  document.getElementById("openCount").innerText = open;
+  document.getElementById("progressCount").innerText = inProgress;
+  document.getElementById("resolvedCount").innerText = resolved;
+}
+
+function displayRows(filtered = tickets) {
+  const body = document.getElementById("csrBody");
+  body.innerHTML = "";
+
+  filtered.forEach((ticket, index) => {
+    const row = document.createElement("tr");
+    const statusClass = mapStatusClass(ticket.status);
+
+    row.innerHTML = `
+      <td>${ticket.customer}</td>
+      <td>${ticket.concern}</td>
+      <td>${ticket.date}</td>
+      <td>
+        <select onchange="updateStatus(${index}, this.value)">
+          <option value="Open" ${ticket.status === "Open" ? "selected" : ""}>Open</option>
+          <option value="In Progress" ${ticket.status === "In Progress" ? "selected" : ""}>In Progress</option>
+          <option value="Resolved" ${ticket.status === "Resolved" ? "selected" : ""}>Resolved</option>
+        </select>
+        <button 
+          class="done-btn" 
+          onclick="removeTicket(${index})" 
+          style="display: ${ticket.status === 'Resolved' ? 'inline-block' : 'none'}; margin-left: 10px;">
+          Done
+        </button>
+      </td>
+      <td><a href="${ticket.chatlink}">Detail</a></td>
+    `;
+    body.appendChild(row);
+  });
+
+  updateSummary(filtered);
+}
+
+
+function applyFilters() {
+  const status = document.getElementById("statusFilter").value;
+  const search = document.getElementById("searchInput").value.toLowerCase();
+
+  const filtered = tickets.filter(t => {
+    const matchStatus = (status === "all") || (t.status === status);
+    const matchSearch = t.customer.toLowerCase().includes(search) || t.concern.toLowerCase().includes(search);
+    return matchStatus && matchSearch;
+  });
+
+  displayRows(filtered);
+}
+
+// Initial load
+displayRows();
+
+
+
+function addConcern() {
+  const customer = document.getElementById("customerInput").value.trim();
+  const concernSelect = document.getElementById("concernInput");
+  const concernValue = concernSelect.value;
+  const otherValue = document.getElementById("otherConcernInput").value.trim();
+  const chatlink = document.getElementById('chatLinkInput').value
+
+  let concern = concernValue === "others" ? otherValue : concernValue;
+
+  if (!customer || !concern) {
+    alert("Please enter both customer name and concern.");
+    return;
+  }
+
+  const newTicket = {
+    customer: customer,
+    concern: concern,
+    date: new Date().toISOString().split("T")[0],
+    status: "Open",
+    chatlink: chatlink
+  };
+
+  jsonData = JSON.stringify(newTicket)
+
+  xhr = new XMLHttpRequest()
+  xhr.open("POST", "/api/insert_concern", true)
+  xhr.setRequestHeader("Content-type", "application/json")
+  xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200){
+          console.log('Data Sent Successfully')
+      }
+  }
+
+  xhr.send(jsonData)
+
+  tickets.push(newTicket);
+  displayRows(tickets);
+
+  // Clear inputs
+  document.getElementById("customerInput").value = "";
+  concernSelect.value = "";
+  document.getElementById("otherConcernInput").value = "";
+  document.getElementById("otherConcernInput").style.display = "none";
+  document.getElementById('chatLinkInput').value = ""
+
+  location.reload()
+}
+
+
+function toggleOtherInput() {
+  const concernSelect = document.getElementById("concernInput");
+  const otherInput = document.getElementById("otherConcernInput");
+  
+  if (concernSelect.value === "others") {
+    otherInput.style.display = "inline-block";
+  } else {
+    otherInput.style.display = "none";
+  }
+}
+
+
+function updateStatus(index, newStatus) {
+  tickets[index].status = newStatus;
+
+  console.log(tickets[index])
+
+  jsonData = JSON.stringify(tickets[index])
+
+  xhr = new XMLHttpRequest()
+  xhr.open("POST", "/api/update_concern", true)
+  xhr.setRequestHeader("Content-type", "application/json")
+  xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200){
+          console.log('Data Sent Successfully')
+      }
+  }
+
+  xhr.send(jsonData)
+
+  displayRows(tickets); // Refresh UI
+}
+
+function removeTicket(index) {
+
+  console.log(tickets[index].id)
+
+  data = {
+    id: tickets[index].id
+  }
+
+  jsonData = JSON.stringify(data)
+
+  xhr = new XMLHttpRequest()
+  xhr.open("POST", "/api/delete_concern", true)
+  xhr.setRequestHeader("Content-type", "application/json")
+  xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200){
+          console.log('Data Sent Successfully')
+      }
+  }
+
+  xhr.send(jsonData)
+
+  tickets.splice(index, 1);
+
+  displayRows(tickets);
+}
+  </script>
 </body>
 </html>

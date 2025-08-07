@@ -82,3 +82,150 @@ a {
   color: #007bff;
   text-decoration: none;
 }
+
+#menuToggle {
+
+
+background-color: red;
+ color: black;
+ margin-right: 95% ;
+ display: inline-flex;
+}
+
+#menuToggle:hover{
+    background-color: white;
+    color: white;
+}
+
+#menuToggle:active{
+    background-color: darkred;
+    color: white;
+}
+
+
+#logoutICON {
+
+ color: black;
+ margin-right: 95% ;
+ margin-left: 10%;
+ margin-top: 85%;
+ display: inline-flex;
+}
+
+#logoutICON:hover{
+    background-color: red;
+  
+}
+
+#logoutICON:active{
+    background-color: #2c3e50;
+    
+}
+
+
+#tclogo { 
+   margin-right: 50% ;
+}
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 230px;
+  background-color: #2c3e50;
+  color: white;
+  padding-top: 60px;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li a {
+  display: block;
+  padding: 15px 20px;
+  text-decoration: none;
+  color: white;
+  transition: background 0.3s ease;
+}
+
+.sidebar ul li a:hover {
+  background-color: #34495e;
+}
+
+/* Hide by default */
+.sidebar.hidden {
+  transform: translateX(-100%);
+}
+
+
+.add-concern {
+  background-color: #fff;
+  padding: 10px;
+  margin: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.add-concern input {
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 200px;
+  height: 30px;
+}
+
+.add-concern button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 10px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  height: 51px;
+}
+
+.add-concern button:hover {
+  background-color: darkred;
+}
+select{
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 200px;
+  height: 52px;
+}
+
+
+#otherConcernInput {
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 200px;
+  height: 30px;
+}
+
+
+.done-btn {
+  background-color: green;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.done-btn:hover {
+  background-color: darkgreen;
+}
+

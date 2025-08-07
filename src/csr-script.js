@@ -51,24 +51,39 @@ function updateSummary(filtered) {
   document.getElementById("resolvedCount").innerText = resolved;
 }
 
-function displayRows(filtered = tickets) {
-  const body = document.getElementById("csrBody");
-  body.innerHTML = "";
+function addConcern() {
+  const customer = document.getElementById("customerInput").value.trim();
+  const concernSelect = document.getElementById("concernInput");
+  const concernValue = concernSelect.value;
+  const otherValue = document.getElementById("otherConcernInput").value.trim();
+  const chatLink = document.getElementById("chatLinkInput").value.trim();
 
-  filtered.forEach(ticket => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${ticket.customer}</td>
-      <td>${ticket.concern}</td>
-      <td>${ticket.date}</td>
-      <td><span class="status ${mapStatusClass(ticket.status)}">${ticket.status}</span></td>
-      <td><a href="#">Detail</a></td>
-    `;
-    body.appendChild(row);
-  });
+  let concern = concernValue === "others" ? otherValue : concernValue;
 
-  updateSummary(filtered);
+  if (!customer || !concern || !chatLink) {
+    alert("Please complete all fields including the chat link.");
+    return;
+  }
+
+  const newTicket = {
+    customer: customer,
+    concern: concern,
+    date: new Date().toISOString().split("T")[0],
+    status: "Open",
+    chatLink: chatLink
+  };
+
+  tickets.push(newTicket);
+  displayRows(tickets);
+
+  // Clear inputs
+  document.getElementById("customerInput").value = "";
+  concernSelect.value = "";
+  document.getElementById("otherConcernInput").value = "";
+  document.getElementById("otherConcernInput").style.display = "none";
+  document.getElementById("chatLinkInput").value = "";
 }
+
 
 function applyFilters() {
   const status = document.getElementById("statusFilter").value;
@@ -85,3 +100,58 @@ function applyFilters() {
 
 // Initial load
 displayRows();
+
+
+
+function addConcern() {
+  const customer = document.getElementById("customerInput").value.trim();
+  const concernSelect = document.getElementById("concernInput");
+  const concernValue = concernSelect.value;
+  const otherValue = document.getElementById("otherConcernInput").value.trim();
+
+  let concern = concernValue === "others" ? otherValue : concernValue;
+
+  if (!customer || !concern) {
+    alert("Please enter both customer name and concern.");
+    return;
+  }
+
+  const newTicket = {
+    customer: customer,
+    concern: concern,
+    date: new Date().toISOString().split("T")[0],
+    status: "Open"
+  };
+
+  tickets.push(newTicket);
+  displayRows(tickets);
+
+  // Clear inputs
+  document.getElementById("customerInput").value = "";
+  concernSelect.value = "";
+  document.getElementById("otherConcernInput").value = "";
+  document.getElementById("otherConcernInput").style.display = "none";
+}
+
+
+function toggleOtherInput() {
+  const concernSelect = document.getElementById("concernInput");
+  const otherInput = document.getElementById("otherConcernInput");
+  
+  if (concernSelect.value === "others") {
+    otherInput.style.display = "inline-block";
+  } else {
+    otherInput.style.display = "none";
+  }
+}
+
+
+function updateStatus(index, newStatus) {
+  tickets[index].status = newStatus;
+  displayRows(tickets); // Refresh UI
+}
+
+function removeTicket(index) {
+  tickets.splice(index, 1);
+  displayRows(tickets);
+}

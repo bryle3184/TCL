@@ -52,18 +52,48 @@ function displayRows(filtered = data) {
   const body = document.getElementById("payoutBody");
   body.innerHTML = "";
 
-  filtered.forEach(item => {
+  filtered.forEach((item, index) => {
     const row = document.createElement("tr");
+
+    const statusClass = mapStatusClass(item.status);
+    const linkHtml = item.link ? `<a href="${item.link}" target="_blank">Open</a>` : "-";
+
     row.innerHTML = `
       <td>${item.name}</td>
       <td>${item.campaign}</td>
       <td>${item.date}</td>
-      <td><span class="status ${mapStatusClass(item.status)}">${item.status}</span></td>
-      <td><a href="#">Detail</a></td>
+      <td>
+        <select onchange="updateStatus(${index}, this.value)">
+          <option ${item.status === "Ongoing Creation" ? "selected" : ""}>Ongoing Creation</option>
+          <option ${item.status === "Waiting for Finance" ? "selected" : ""}>Waiting for Finance</option>
+          <option ${item.status === "SO Creation" ? "selected" : ""}>SO Creation</option>
+          <option ${item.status === "For Approval" ? "selected" : ""}>For Approval</option>
+          <option ${item.status === "Waiting for SI" ? "selected" : ""}>Waiting for SI</option>
+          <option ${item.status === "SI Delivered" ? "selected" : ""}>SI Delivered</option>
+          <option ${item.status === "Done" ? "selected" : ""}>Done</option>
+        </select>
+        ${item.status === "Done" ? `<button onclick="deleteCampaign(${index})" style="margin-top: 5px; background: darkred; color: white; border: none; padding: 5px 10px; cursor: pointer;">Delete</button>` : ""}
+      </td>
+      <td>${linkHtml}</td>
+     
     `;
+
     body.appendChild(row);
   });
 }
+
+function updateStatus(index, newStatus) {
+  data[index].status = newStatus;
+  displayRows(data);
+}
+
+function deleteCampaign(index) {
+  if (confirm("Are you sure you want to delete this campaign?")) {
+    data.splice(index, 1);
+    displayRows(data);
+  }
+}
+
 
 function applyFilters() {
   const name = document.getElementById("nameFilter").value.toLowerCase();
@@ -83,3 +113,30 @@ function applyFilters() {
 
 // Initial render
 displayRows();
+
+function addCampaign() {
+  const influencer = document.getElementById("influencerInput").value.trim();
+  const campaign = document.getElementById("campaignInput").value.trim();
+  const link = document.getElementById("linkInput").value.trim();
+
+  if (!influencer || !campaign) {
+    alert("Please enter both influencer name and campaign name.");
+    return;
+  }
+
+  const newCampaign = {
+    name: influencer,
+    campaign: campaign,
+    date: new Date().toISOString().split("T")[0],
+    status: "Ongoing Creation",
+    link: link || ""
+  };
+
+  data.push(newCampaign);
+  displayRows(data);
+
+  document.getElementById("influencerInput").value = "";
+  document.getElementById("campaignInput").value = "";
+  document.getElementById("linkInput").value = "";
+}
+

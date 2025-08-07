@@ -1,14 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+   <link rel="icon" href="favicon.ico" type="image/ico">
   <meta charset="UTF-8">
   <title>TCL | Payout Tracker</title>
   <link rel="stylesheet" href="tclpayout.css">
 </head>
 <body>
   <header>
-    <h1>TCL | Influencer Payout Tracker</h1>
+   <img src="menu1.png" height="50px" align="left" id="menuToggle">
+    <h1>TCL | Payout Tracker</h1>
+    </div>
   </header>
+
+  
+  <div id="sidebar" class="sidebar hidden">
+    <img src="tcl_logo.png" height="50px" id="tclogo" align="right"><br> <br>
+  <ul>
+    <li><a href="TCL_index.html">Dashboard</a></li>
+    <li><a href="TCL_creative.html">Creative Asset Tracker</a></li>
+    <li><a href="TCLcalendar.html">Calendar</a></li>
+    <li> <a href="digitalmarket.html">Digital Market Tracker</a></li>
+    <li><a href="TCLpayout.html">Payout Tracker</a></li>
+    <li><a href="TCLcsr.html">Customer Service</a></li>
+  
+  <a href="index.html"> <img src="logout.png" height="50px" id="logoutICON" > </a>
+  </div>
+
+<section class="add-campaign">
+  <h3>Add New Campaign</h3>
+  <input type="text" id="influencerInput" placeholder="Influencer Name">
+  <input type="text" id="campaignInput" placeholder="Campaign Name">
+  <input type="url" id="linkInput" placeholder="Campaign File Link (optional)">
+  <button onclick="addCampaign()">Add Campaign</button>
+</section>
+
+
 
   <section class="filters">
     <input type="text" id="nameFilter" placeholder="Filter by influencer name">
@@ -20,20 +47,214 @@
   <section class="table-container">
     <table>
       <thead>
-        <tr>
-          <th>Influencer</th>
-          <th>Campaign</th>
-          <th>Date</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
+  <tr>
+    <th>Influencer</th>
+    <th>Campaign</th>
+    <th>Date</th>
+    <th>Status</th>
+    <th>Link</th>
+  </tr>
+</thead>
+
       <tbody id="payoutBody">
         <!-- Table rows will be generated here -->
       </tbody>
     </table>
   </section>
+ <script>
+  const menuBtn = document.getElementById("menuToggle");
+  const sidebar = document.getElementById("sidebar");
 
-  <script src="tclpayout.js"></script>
+  // Show sidebar on image click
+  menuBtn.addEventListener("click", (e) => {
+    e.stopPropagation(); // Prevent body click from firing
+    sidebar.classList.remove("hidden");
+  });
+
+  // Hide sidebar if clicked outside
+  document.body.addEventListener("click", (e) => {
+    if (!sidebar.contains(e.target) && e.target !== menuBtn) {
+      sidebar.classList.add("hidden");
+    }
+  });
+</script>
+  <script>
+const data = [
+];
+
+async function fetchData(){
+  const res = await fetch('/api/payout.html')
+  const data1 = await res.json()
+
+  for (let index = 0; index < data1.length; index++) {
+    let datas = {
+      id: data1[index]._id,
+      name: data1[index].name,
+      campaign: data1[index].campaign,
+      date: data1[index].date,
+      status: data1[index].status,
+      link: data1[index].link
+    }
+
+    data.push(datas)
+    displayRows()
+  }
+}
+
+fetchData()
+
+function mapStatusClass(status) {
+  return {
+    "Ongoing Creation": "Ongoing",
+    "Waiting for Finance": "WaitingFinance",
+    "For Approval": "ForApproval",
+    "SO Creation": "SOCreation",
+    "Waiting for SI": "WaitingSI",
+    "SI Delivered": "SIDelivered"
+  }[status] || "";
+}
+
+function displayRows(filtered = data) {
+  const body = document.getElementById("payoutBody");
+  body.innerHTML = "";
+
+  filtered.forEach((item, index) => {
+    const row = document.createElement("tr");
+
+    const statusClass = mapStatusClass(item.status);
+    const linkHtml = item.link ? `<a href="${item.link}" target="_blank">Open</a>` : "-";
+
+    row.innerHTML = `
+      <td>${item.name}</td>
+      <td>${item.campaign}</td>
+      <td>${item.date}</td>
+      <td>
+        <select onchange="updateStatus(${index}, this.value)">
+          <option ${item.status === "Ongoing Creation" ? "selected" : ""}>Ongoing Creation</option>
+          <option ${item.status === "Waiting for Finance" ? "selected" : ""}>Waiting for Finance</option>
+          <option ${item.status === "SO Creation" ? "selected" : ""}>SO Creation</option>
+          <option ${item.status === "For Approval" ? "selected" : ""}>For Approval</option>
+          <option ${item.status === "Waiting for SI" ? "selected" : ""}>Waiting for SI</option>
+          <option ${item.status === "SI Delivered" ? "selected" : ""}>SI Delivered</option>
+          <option ${item.status === "Done" ? "selected" : ""}>Done</option>
+        </select>
+        ${item.status === "Done" ? `<button onclick="deleteCampaign(${index})" style="margin-top: 5px; background: darkred; color: white; border: none; padding: 5px 10px; cursor: pointer;">Delete</button>` : ""}
+      </td>
+      <td>${linkHtml}</td>
+     
+    `;
+
+    body.appendChild(row);
+  });
+}
+
+function updateStatus(index, newStatus) {
+  data[index].status = newStatus;
+
+  datas = {
+    id: data[index].id,
+    status: data[index].status
+  }
+
+  jsonData = JSON.stringify(datas)
+        xhr = new XMLHttpRequest()
+        xhr.open("POST", "/update/payout.html", true)
+        xhr.setRequestHeader("Content-type", "application/json")
+        xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200){
+        console.log('Data Sent Successfully')
+        }
+    }
+
+xhr.send(jsonData)
+
+  displayRows(data);
+}
+
+function deleteCampaign(index) {
+  if (confirm("Are you sure you want to delete this campaign?")) {
+
+    datas = {
+      id: data[index].id
+    }
+    
+jsonData = JSON.stringify(datas)
+        xhr = new XMLHttpRequest()
+        xhr.open("POST", "/delete/payout.html", true)
+        xhr.setRequestHeader("Content-type", "application/json")
+        xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200){
+        console.log('Data Sent Successfully')
+        }
+    }
+
+xhr.send(jsonData)
+
+data.splice(index, 1);
+
+    displayRows(data);
+  }
+}
+
+
+function applyFilters() {
+  const name = document.getElementById("nameFilter").value.toLowerCase();
+  const campaign = document.getElementById("campaignFilter").value.toLowerCase();
+  const date = document.getElementById("dateFilter").value;
+
+  const filtered = data.filter(item => {
+    return (
+      item.name.toLowerCase().includes(name) &&
+      item.campaign.toLowerCase().includes(campaign) &&
+      (date === "" || item.date === date)
+    );
+  });
+
+  displayRows(filtered);
+}
+
+// Initial render
+displayRows();
+
+function addCampaign() {
+  const influencer = document.getElementById("influencerInput").value.trim();
+  const campaign = document.getElementById("campaignInput").value.trim();
+  const link = document.getElementById("linkInput").value.trim();
+
+  if (!influencer || !campaign) {
+    alert("Please enter both influencer name and campaign name.");
+    return;
+  }
+
+  const newCampaign = {
+    name: influencer,
+    campaign: campaign,
+    date: new Date().toISOString().split("T")[0],
+    status: "Ongoing Creation",
+    link: link || ""
+  };
+
+  jsonData = JSON.stringify(newCampaign)
+    xhr = new XMLHttpRequest()
+    xhr.open("POST", "/insert/payout.html", true)
+    xhr.setRequestHeader("Content-type", "application/json")
+    xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200){
+    console.log('Data Sent Successfully')
+    }
+  }
+
+  xhr.send(jsonData)
+
+  data.push(newCampaign);
+  displayRows(data);
+
+  document.getElementById("influencerInput").value = "";
+  document.getElementById("campaignInput").value = "";
+  document.getElementById("linkInput").value = "";
+}
+
+
+  </script>
 </body>
 </html>

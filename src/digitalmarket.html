@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Digital Marketing Tracker</title>
+  <link rel="stylesheet" href="marketing-style.css">
+  <link rel="icon" href="favicon.ico" type="image/ico">
+</head>
+<body>
+
+<header>
+  <img src="menu1.png" height="50px" align="left" id="menuToggle">
+  <h1>Digital Marketing Tracker</h1>
+</header>
+
+<div id="sidebar" class="sidebar hidden">
+  <img src="tcl_logo.png" height="50px" id="tclogo" align="right"><br><br>
+  <ul>
+    <li><a href="TCL_index.html">Dashboard</a></li>
+    <li><a href="TCL_creative.html">Creative Asset Tracker</a></li>
+    <li><a href="TCLcalendar.html">Calendar</a></li>
+    <li><a href="digitalmarket.html">Digital Market Tracker</a></li>
+    <li><a href="TCLpayout.html">Payout Tracker</a></li>
+    <li><a href="TCLcsr.html">Customer Service</a></li>
+    <a href="index.html"><img src="logout.png" height="50px" id="logoutICON"></a>
+  </ul>
+</div>
+
+<!-- TAB BUTTONS -->
+<div class="tab-buttons">
+  <button class="tab-btn active" onclick="switchTab('marketingTab')">Digital Marketing</button>
+  <button class="tab-btn" onclick="switchTab('contentCalendarTab')">Content Calendar</button>
+  <button class="tab-btn" onclick="switchTab('calendarTab')">Calendar View</button>
+</div>
+
+<!-- MARKETING TAB -->
+<div id="marketingTab" class="tab-content" style="display: block;">
+  <section class="add-campaign">
+    <h3>Add New Campaign</h3>
+    <input type="text" id="campaignName" placeholder="Campaign Name">
+    <input type="date" id="executionDate">
+    <input type="text" id="budget" placeholder="Budget (₱)">
+    <input type="url" id="link" placeholder="Link (optional)">
+    <textarea id="notes" placeholder="Performance Notes"></textarea>
+    <button onclick="addCampaign()">Add Campaign</button>
+  </section>
+
+  <section class="campaign-list">
+  <h2>Scheduled Marketing Campaigns</h2>
+  <table class="campaign-table">
+    <thead>
+      <tr>
+        <th class="campaign-col">Campaign</th>
+        <th class="date-col">Date</th>
+        <th class="budget-col">Budget</th>
+        <th class="link-col">Link</th>
+        <th class="notes-col">Notes</th>
+        <th class="actions-col">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="campaignBody"></tbody>
+  </table>
+</section>
+
+</div>
+
+<!-- CONTENT CALENDAR TAB -->
+<div id="contentCalendarTab" class="tab-content" style="display: none;">
+  <section class="campaign-list">
+    <h2>Content Calendar</h2>
+    <table id="contentTable">
+      <thead>
+        <tr>
+          <th>Schedule</th>
+          <th>Account</th>
+          <th>Platform</th>
+          <th>Event</th>
+          <th>Visual Concept</th>
+          <th>Header</th>
+          <th>Subheader</th>
+          <th>Caption</th>
+          <th>Hashtags</th>
+          <th>Creatives/Video Link</th>
+          <th>Thumbnail</th>
+          <th>View Image</th>
+          <th>Campaign Period</th>
+          <th>Notes</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="contentBody"></tbody>
+    </table>
+  
+    <button onclick="addContentRow()" class="add-content-btn" id='add-content-btn'>Add Content</button>
+
+     <div class="calendar-actions">
+  <button onclick="openCreateModal()">Create New</button>
+  <button onclick="openArchive()">View Archive</button>
+</div>
+
+<!-- Create New Modal -->
+<div id="createModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <h3>Create New Entry</h3>
+    <input type="text" id="newEntryName" placeholder="Enter name">
+    <button class="Back2Back" onclick="submitCreate()">Submit</button>
+<script>
+async function submitCreate(){
+const newEntryName = document.getElementById('newEntryName')
+
+data = {
+        name: document.getElementById('newEntryName').value
+    }
+
+    jsonData = JSON.stringify(data)
+        xhr = new XMLHttpRequest()
+        xhr.open("POST", "/insert/digitalMarketArchives", true)
+        xhr.setRequestHeader("Content-type", "application/json")
+        xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200){
+        console.log('Data Sent Successfully')
+        }
+    }
+
+xhr.send(jsonData)
+newEntryName.value = ''
+closeCreateModal()
+fetchTable()
+}
+</script>
+    <button class="Back2Back" onclick="closeCreateModal()">Back</button>
+  </div>
+</div>
+
+<div id="archiveModal" class="modal" style="display: none;">
+  <div class="modal-content" style="max-width: 700px;">
+    <h3>Archived Entries</h3>
+    <table class="archive-table" id="archiveTable">
+      <thead>
+        <tr>
+          <th>Entry Name</th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      
+<script>
+let archives = [
+
+]
+
+let activeArchive
+
+async function fetchTable(){
+  const rows1 = document.querySelectorAll('#rows1')
+  for (let index = 0; index < rows1.length; index++) {
+    rows1[index].remove()
+    
+  }
+  const res = await fetch('/get/digitalMarketArchives')
+  const data = await res.json()
+  const archiveTable = document.getElementById('archiveTable')
+  const addButton = document.getElementById('add-content-btn')
+
+  if(activeArchive == '' || activeArchive == null){
+    addButton.style.display = 'none'
+  }
+
+  for (let index = 0; index < data.length; index++) {
+    const row = document.createElement('tbody')
+
+    row.id = 'rows1'
+
+    row.innerHTML = `
+      <tr class="archive-row" id='${data[index].name}' onclick=fetchArchive(this.id)>
+        <td>${data[index].name}</td>
+        <td></td>
+        <td></td>
+        <td><button id='${data[index]._id}' name='${data[index].name}' onclick="deleteArchive(this.id, this.name)"> Delete</button></td>
+      </tr>
+    `
+
+    archiveTable.append(row)
+  }
+}
+
+function deleteArchive(id, name){
+  const addButton = document.getElementById('add-content-btn')
+
+  addButton.style.display = 'none'
+      data = {
+        name: name,
+        id: id
+    }
+
+    jsonData = JSON.stringify(data)
+        xhr = new XMLHttpRequest()
+        xhr.open("POST", "/delete/digitalMarketArchives", true)
+        xhr.setRequestHeader("Content-type", "application/json")
+        xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200){
+        console.log('Data Sent Successfully')
+        }
+    }
+
+xhr.send(jsonData)
+fetchTable()
+}
+
+function fetchArchive(name){
+  clearCells()
+  const addButton = document.getElementById('add-content-btn')
+  activeArchive = name
+  console.log(activeArchive)
+  addButton.style.display = 'block'
+
+  data = {
+        name: name
+    }
+
+    jsonData = JSON.stringify(data)
+        xhr = new XMLHttpRequest()
+        xhr.open("POST", "/digitalMarketArchives", true)
+        xhr.setRequestHeader("Content-type", "application/json")
+        xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200){
+        console.log('Data Sent Successfully')
+        }
+    }
+
+xhr.send(jsonData)
+fetch_data()
+closeArchive()
+clearElements()
+}
+
+fetchTable()
+</script>
+    </table>
+    <button class="Back2Back" onclick="closeArchive()">Back</button>
+  </div>
+</div>
+
+  </section>
+</div>
+
+<!-- CALENDAR VIEW TAB -->
+<div id="calendarTab" class="tab-content" style="display: none;">
+  <h2>Content Calendar View</h2>
+
+<div class="calendar-controls">
+  <label for="calendarMonth">Month:</label>
+  <select id="calendarMonth">
+    <option value="0">January</option>
+    <option value="1">February</option>
+    <option value="2">March</option>
+    <option value="3">April</option>
+    <option value="4">May</option>
+    <option value="5">June</option>
+    <option value="6">July</option>
+    <option value="7">August</option>
+    <option value="8">September</option>
+    <option value="9">October</option>
+    <option value="10">November</option>
+    <option value="11">December</option>
+  </select>
+
+  <label for="calendarYear">Year:</label>
+  <select id="calendarYear">
+    <!-- Years generated by JS -->
+  </select>
+</div>
+
+<div id="calendar" class="calendar-grid"></div>
+
+
+<!-- SIDEBAR TOGGLE SCRIPT -->
+<script>
+  const menuBtn = document.getElementById("menuToggle");
+  const sidebar = document.getElementById("sidebar");
+
+  menuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    sidebar.classList.remove("hidden");
+  });
+
+  document.body.addEventListener("click", (e) => {
+    if (!sidebar.contains(e.target) && e.target !== menuBtn) {
+      sidebar.classList.add("hidden");
+    }
+  });
+
+  function switchTab(tabId) {
+    const tabs = document.querySelectorAll('.tab-content');
+    const buttons = document.querySelectorAll('.tab-btn');
+
+    tabs.forEach(tab => tab.style.display = 'none');
+    buttons.forEach(btn => btn.classList.remove('active'));
+
+    document.getElementById(tabId).style.display = 'block';
+    event.target.classList.add('active');
+
+    if (tabId === "calendarTab") renderCalendar();
+  }
+</script>
+
+<script>
+const campaigns = [];
+
+async function fetchCampaigns(){
+  const res = await fetch('/api/getCampaigns')
+  const data = await res.json()
+
+  for (let index = 0; index < data.length; index++) {
+    const datas = {
+      id: data[index]._id,
+      name: data[index].campaign,
+      budget: data[index].budget,
+      link: data[index].link,
+      date: data[index].date,
+      notes: data[index].notes
+    }
+
+    campaigns.push(datas)
+
+    renderCampaigns()
+  }
+}
+
+fetchCampaigns()
+
+function renderCampaigns() {
+  const tbody = document.getElementById("campaignBody");
+  tbody.innerHTML = "";
+
+  campaigns.forEach((campaign, index) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${campaign.name}</td>
+      <td>${campaign.date}</td>
+      <td>₱${campaign.budget}</td>
+      <td><a href="${campaign.link}" target="_blank">${campaign.link ? "View" : "-"}</a></td>
+      <td>${campaign.notes}</td>
+      <td>
+        <button class="action-btn" onclick="deleteCampaign(${index})">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function addCampaign() {
+  const name = document.getElementById("campaignName").value.trim();
+  const date = document.getElementById("executionDate").value;
+  const budget = document.getElementById("budget").value.trim();
+  const link = document.getElementById("link").value.trim();
+  const notes = document.getElementById("notes").value.trim();
+
+  if (!name || !date || !budget) {
+    alert("Please fill in the campaign name, date, and budget.");
+    return;
+  }
+
+  campaigns.push({ name, date, budget, link, notes });
+  renderCampaigns();
+
+  document.getElementById("campaignName").value = "";
+  document.getElementById("executionDate").value = "";
+  document.getElementById("budget").value = "";
+  document.getElementById("link").value = "";
+  document.getElementById("notes").value = "";
+
+  data = {
+    campaign: name,
+    date: date,
+    budget: budget,
+    link: link,
+    notes: notes
+  }
+
+  jsonData = JSON.stringify(data)
+
+      xhr = new XMLHttpRequest()
+      xhr.open("POST", "/api/insertCampaign", true)
+      xhr.setRequestHeader("Content-type", "application/json")
+      xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200){
+      console.log('Data Sent Successfully')
+      }
+    }
+
+  xhr.send(jsonData)
+}
+
+function deleteCampaign(index) {
+  if (confirm("Are you sure you want to delete this campaign?")) {
+    console.log(campaigns[index].id)
+
+    const data = {
+      id: campaigns[index].id
+    }
+
+    jsonData = JSON.stringify(data)
+
+        xhr = new XMLHttpRequest()
+        xhr.open("POST", "/api/deleteCampaign", true)
+        xhr.setRequestHeader("Content-type", "application/json")
+        xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200){
+        console.log('Data Sent Successfully')
+        }
+      }
+
+    xhr.send(jsonData)
+
+    campaigns.splice(index, 1);
+    renderCampaigns();
+  }
+}
+
+renderCampaigns();
+
+let contentEvents = [];
+
+function clearElements(){
+  const rows = document.querySelectorAll('#rows')
+  
+  for (let index = 0; index < rows.length; index++) {
+    rows[index].remove()
+    
+  }
+}
+
+async function showImagePreview(id) {
+  const fileInput = document.getElementById(`${id}-file`);
+  const file = fileInput.files[0];
+
+  if (!file) {
+    const res = await fetch('/get/digital_marketings')
+    const data = await res.json()
+
+    console.log(data)
+    console.log(id)
+    for (let index = 0; index < data.length; index++) {
+      if(data[index].id == id){
+        console.log(data[index].file)
+        location.href = data[index].file
+
+        reader.onload = function(e) {
+    const imgWindow = window.open("", "_blank", "width=600,height=600");
+    imgWindow.document.write(`
+      <html>
+        <head><title>Image Preview</title></head>
+        <body style="margin:0;display:flex;justify-content:center;align-items:center;height:100vh;">
+          <img src="${data[index].file}" style="max-width:100%; max-height:100%;" />
+        </body>
+      </html>
+    `);
+  };
+
+  reader.readAsDataURL(file);
+      }
+      
+    }
+
+    return
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    const imgWindow = window.open("", "_blank", "width=600,height=600");
+    imgWindow.document.write(`
+      <html>
+        <head><title>Image Preview</title></head>
+        <body style="margin:0;display:flex;justify-content:center;align-items:center;height:100vh;">
+          <img src="${e.target.result}" style="max-width:100%; max-height:100%;" />
+        </body>
+      </html>
+    `);
+  };
+
+  reader.readAsDataURL(file);
+}
+
+async function fetch_data(){
+  const res = await fetch('/get/digital_marketings')
+  const data = await res.json()
+
+  for (let index = 0; index < data.length; index++) {
+    const tbody = document.getElementById("contentBody");
+    const row = document.createElement("tr");
+
+    row.id = 'rows'
+
+    const id = data[index].id
+
+    row.innerHTML = `
+      <td><input type="date" id="${id}-date" value='${data[index].schedule}'></td>
+      <td>
+        <select id="${id}-account">
+          <option value='TCL'>TCL</option>
+          <option value='iFFalcon'>iFFalcon</option>
+        </select>
+      </td>
+      <td>
+        <select id="${id}-platform">
+          <option value='TikTok'>TikTok</option>
+          <option value='Shopee'>Shopee</option>
+          <option value='Lazada'>Lazada</option>
+        </select>
+      </td>
+      <td><input type="text" id="${id}-event" placeholder="Event" value="${data[index].event}"></td>
+      <td><input type="text" id="${id}-visual" value='${data[index].visual}'></td>
+      <td><input type="text" id="${id}-header" value='${data[index].header}'></td>
+      <td><input type="text" id="${id}-subheader" value='${data[index].subheader}'></td>
+      <td><textarea id="${id}-caption" value='${data[index].caption}'>${data[index].caption}</textarea></td>
+      <td><input type="text" id="${id}-hashtags" value='${data[index].hashtags}'></td>
+      <td><input type="url" id="${id}-creatives" value='${data[index].creatives}'></td>
+      <td><input type="file" id="${id}-file" value='${data[index].file}'></td>
+      <td>
+        <a href="#" id='${id}-link' onclick="showImagePreview('${data[index].id}'); return false;">View</a>  
+      </td>
+      
+      <td><input type="text" id="${id}-campaign" value='${data[index].campaign}'></td>
+      <td><input type="text" id="${id}-note" value='${data[index].notes}'></td>
+      <td>
+        <select id="${id}-status">
+          <option value='Pending'>Pending</option>
+          <option value='In Review'>In Review</option>
+          <option value='Scheduled'>Scheduled</option>
+          <option value='Posted'>Posted</option>
+        </select>
+        <button class="action-btn" id="${id}-doneBtn" style="display:none;">Done</button>
+      </td>
+    `;
+      tbody.appendChild(row); 
+
+      setTimeout(() => {
+      const dateInput = document.getElementById(`${id}-date`);
+      const eventInput = document.getElementById(`${id}-event`);
+      const platformInput = document.getElementById(`${id}-platform`);
+      const accountInput = document.getElementById(`${id}-account`);
+      const statusSelect = document.getElementById(`${id}-status`);
+      const doneBtn = document.getElementById(`${id}-doneBtn`);
+
+      const visualinput = document.getElementById(`${id}-visual`)
+      const headerinput = document.getElementById(`${id}-header`)
+      const subheaderinput = document.getElementById(`${id}-subheader`)
+      const captioninput = document.getElementById(`${id}-caption`)
+      const hashtagsinput = document.getElementById(`${id}-hashtags`)
+      const creativesinput = document.getElementById(`${id}-creatives`)
+      const campaigninput = document.getElementById(`${id}-campaign`)
+      const noteinput = document.getElementById(`${id}-note`)
+      const fileInput = document.getElementById(`${id}-file`)
+      const linkInput = document.getElementById(`${id}-link`)
+      
+
+      platformInput.value = data[index].platform
+      accountInput.value = data[index].account
+      statusSelect.value = data[index].status
+
+      
+
+      updateCalendarEvent({
+          id,
+          date: dateInput.value,
+          title: eventInput.value,
+          platform: platformInput.value,
+          account: accountInput.value
+        });
+
+        async function update1(){
+
+        const formData = new FormData()
+        formData.append('id', id)
+        formData.append('schedule', dateInput.value,)
+        formData.append('account', accountInput.value,)
+        formData.append('platform', platformInput.value,)
+        formData.append('event', eventInput.value,)
+        formData.append('visual', visualinput.value,)
+        formData.append('header', headerinput.value,)
+        formData.append('subheader', subheaderinput.value)
+        formData.append('caption', captioninput.value,)
+        formData.append('hashtags', hashtagsinput.value)
+        formData.append('creatives', creativesinput.value)
+        formData.append('campaign', campaigninput.value)
+        formData.append('notes', noteinput.value)
+        formData.append('status', statusSelect.value)
+        formData.append('archive', activeArchive)
+        // formData.append('file', fileInput.value)
+        formData.append('files', fileInput.files[0])
+
+        // data2 = {
+        //   id: id,
+        //   schedule: dateInput.value,
+        //   account: accountInput.value,
+        //   platform: platformInput.value,
+        //   event: eventInput.value,
+        //   visual: visualinput.value,
+        //   header: headerinput.value,
+        //   subheader: subheaderinput.value,
+        //   caption: captioninput.value,
+        //   hashtags: hashtagsinput.value,
+        //   creatives: creativesinput.value,
+        //   campaign: campaigninput.value,
+        //   notes: noteinput.value,
+        //   status: statusSelect.value,
+        //   archive: activeArchive,
+        //   file: fileInput.value
+        // }
+
+        // jsonData = JSON.stringify(data2)
+
+        xhr = new XMLHttpRequest()
+        xhr.open("POST", "/updates1/digital_marketings", true)
+        // xhr.setRequestHeader("Content-type", "application/json")
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200){
+                console.log('Data Sent Successfully')
+            }
+        }
+
+        xhr.send(formData)
+        // const fileInput = document.getElementById(`${id}-file`);
+        // const file = fileInput.files[0];
+
+        // const reader = new FileReader();
+
+        // reader.onload = function(e) {
+        //   const imgWindow = window.open("", "_blank", "width=600,height=600");
+        //   console.log(e)
+        //   imgWindow.document.write(`
+        //     <html>
+        //       <head><title>Image Preview</title></head>
+        //       <body style="margin:0;display:flex;justify-content:center;align-items:center;height:100vh;">
+        //         <img src="${e.target.result}" style="max-width:100%; max-height:100%;" />
+        //       </body>
+        //     </html>
+        //   `);
+        // };
+
+        // // reader.readAsDataURL(file);
+        
+        }
+
+      async function update() {
+        updateCalendarEvent({
+          id,
+          date: dateInput.value,
+          title: eventInput.value,
+          platform: platformInput.value,
+          account: accountInput.value
+        });
+
+        // Toggle Done button visibility based on status
+        if (statusSelect.value === "Posted") {
+          doneBtn.style.display = "inline-block";
+        } else {
+          doneBtn.style.display = "none";
+        }
+
+        // const formData = new FormData()
+        // formData.append('id', id)
+        // formData.append('schedule', dateInput.value,)
+        // formData.append('account', accountInput.value,)
+        // formData.append('platform', platformInput.value,)
+        // formData.append('event', eventInput.value,)
+        // formData.append('visual', visualinput.value,)
+        // formData.append('header', headerinput.value,)
+        // formData.append('subheader', subheaderinput.value)
+        // formData.append('caption', captioninput.value,)
+        // formData.append('hashtags', hashtagsinput.value)
+        // formData.append('creatives', creativesinput.value)
+        // formData.append('campaign', campaigninput.value)
+        // formData.append('notes', noteinput.value)
+        // formData.append('status', statusSelect.value)
+        // formData.append('archive', activeArchive)
+        // formData.append('file', fileInput.value)
+        // formData.append('files', files)
+
+        data2 = {
+          id: id,
+          schedule: dateInput.value,
+          account: accountInput.value,
+          platform: platformInput.value,
+          event: eventInput.value,
+          visual: visualinput.value,
+          header: headerinput.value,
+          subheader: subheaderinput.value,
+          caption: captioninput.value,
+          hashtags: hashtagsinput.value,
+          creatives: creativesinput.value,
+          campaign: campaigninput.value,
+          notes: noteinput.value,
+          status: statusSelect.value,
+          archive: activeArchive,
+          file: fileInput.value
+        }
+
+        jsonData = JSON.stringify(data2)
+
+        xhr = new XMLHttpRequest()
+        xhr.open("POST", "/update/digital_marketings", true)
+        xhr.setRequestHeader("Content-type", "application/json")
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200){
+                console.log('Data Sent Successfully')
+            }
+        }
+
+        xhr.send(jsonData)
+
+      }
+
+      // Event listeners
+      dateInput.addEventListener("change", update);
+      eventInput.addEventListener("input", update);
+      platformInput.addEventListener("change", update);
+      accountInput.addEventListener("change", update);
+      statusSelect.addEventListener("change", update);
+
+      visualinput.addEventListener('input', update)
+      headerinput.addEventListener('input', update)
+      subheaderinput.addEventListener('input', update)
+      captioninput.addEventListener('input', update)
+      hashtagsinput.addEventListener('input', update)
+      creativesinput.addEventListener('input', update)
+      campaigninput.addEventListener('input', update)
+      noteinput.addEventListener('input', update)
+      fileInput.addEventListener('change', update1)
+      doneBtn.addEventListener('click', ()=>{
+        // Remove from contentEvents
+        const index = contentEvents.findIndex(e => e.id === id);
+
+        data3 = {
+          deletes:id
+        }
+
+        jsonData = JSON.stringify(data3)
+
+        xhr = new XMLHttpRequest()
+        xhr.open("POST", "/delete/digitalmarket.html", true)
+        xhr.setRequestHeader("Content-type", "application/json")
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200){
+                console.log('Data Sent Successfully')
+            }
+        }
+
+        xhr.send(jsonData)
+
+        if (index !== -1) {
+          contentEvents.splice(index, 1);
+          renderCalendar();
+        }
+        // Remove row from table
+        row.remove();
+      })
+
+
+    }, 0);
+  }
+}
+
+
+function addContentRow() {
+  const tbody = document.getElementById("contentBody");
+  const row = document.createElement("tr");
+
+  row.id = 'rows'
+
+  const id = `content-${Date.now()}`;
+
+  row.innerHTML = `
+    <td><input type="date" id="${id}-date"></td>
+    <td>
+      <select id="${id}-account">
+        <option>TCL</option>
+        <option>iFFalcon</option>
+      </select>
+    </td>
+    <td>
+      <select id="${id}-platform">
+        <option>TikTok</option>
+        <option>Shopee</option>
+        <option>Lazada</option>
+      </select>
+    </td>
+    <td><input type="text" id="${id}-event" placeholder="Event"></td>
+    <td><input type="text" id="${id}-visual"></td>
+    <td><input type="text" id="${id}-header"></td>
+    <td><input type="text" id="${id}-subheader"></td>
+    <td><textarea id="${id}-caption"></textarea></td>
+    <td><input type="text" id="${id}-hashtags"></td>
+    <td><input type="url" id="${id}-creatives"></td>
+    <td><input type="file" id="${id}-file"></td>
+    <td><a href="" id="${id}-link">View</a></td>
+    <td><input type="text" id="${id}-campaign"></td>
+    <td><input type="text" id="${id}-note"></td>
+    <td>
+      <select id="${id}-status">
+        <option>Pending</option>
+        <option>In Review</option>
+        <option>Scheduled</option>
+        <option>Posted</option>
+      </select>
+      <button class="action-btn" id="${id}-doneBtn" style="display:none;">Done</button>
+    </td>
+  `;
+
+  tbody.appendChild(row);
+
+  setTimeout(() => {
+    const dateInput = document.getElementById(`${id}-date`);
+    const eventInput = document.getElementById(`${id}-event`);
+    const platformInput = document.getElementById(`${id}-platform`);
+    const accountInput = document.getElementById(`${id}-account`);
+    const statusSelect = document.getElementById(`${id}-status`);
+    const doneBtn = document.getElementById(`${id}-doneBtn`);
+
+    const visualinput = document.getElementById(`${id}-visual`)
+    const headerinput = document.getElementById(`${id}-header`)
+    const subheaderinput = document.getElementById(`${id}-subheader`)
+    const captioninput = document.getElementById(`${id}-caption`)
+    const hashtagsinput = document.getElementById(`${id}-hashtags`)
+    const creativesinput = document.getElementById(`${id}-creatives`)
+    const campaigninput = document.getElementById(`${id}-campaign`)
+    const noteinput = document.getElementById(`${id}-note`)
+    const fileInput = document.getElementById(`${id}-file`)
+
+
+     console.log(dateInput.value)
+
+    data = {
+      id: id,
+      schedule: dateInput.value,
+      account: accountInput.value,
+      platform: platformInput.value,
+      event: eventInput.value,
+      visual: visualinput.value,
+      header: headerinput.value,
+      subheader: subheaderinput.value,
+      caption: captioninput.value,
+      hashtags: hashtagsinput.value,
+      creatives: creativesinput.value,
+      campaign: campaigninput.value,
+      notes: noteinput.value,
+      status: statusSelect.value,
+      archive: activeArchive,
+      file: fileInput.value
+    }
+
+    jsonData = JSON.stringify(data)
+
+    xhr = new XMLHttpRequest()
+    xhr.open("POST", "/create/digital_marketings", true)
+    xhr.setRequestHeader("Content-type", "application/json")
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200){
+            console.log('Data Sent Successfully')
+        }
+    }
+
+    xhr.send(jsonData)
+
+    async function update() {
+      updateCalendarEvent({
+        id,
+        date: dateInput.value,
+        title: eventInput.value,
+        platform: platformInput.value,
+        account: accountInput.value
+      });
+
+      // Toggle Done button visibility based on status
+      if (statusSelect.value === "Posted") {
+        doneBtn.style.display = "inline-block";
+      } else {
+        doneBtn.style.display = "none";
+      }
+
+      data1 = {
+        id: id,
+        schedule: dateInput.value,
+        account: accountInput.value,
+        platform: platformInput.value,
+        event: eventInput.value,
+        visual: visualinput.value,
+        header: headerinput.value,
+        subheader: subheaderinput.value,
+        caption: captioninput.value,
+        hashtags: hashtagsinput.value,
+        creatives: creativesinput.value,
+        campaign: campaigninput.value,
+        notes: noteinput.value,
+        status: statusSelect.value,
+        archive: activeArchive,
+        file: ''
+      }
+
+      jsonData = JSON.stringify(data1)
+
+      xhr = new XMLHttpRequest()
+      xhr.open("POST", "/update/digital_marketings", true)
+      xhr.setRequestHeader("Content-type", "application/json")
+      xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4 && xhr.status === 200){
+              console.log('Data Sent Successfully')
+          }
+      }
+
+      xhr.send(jsonData)
+
+    }
+
+    // Event listeners
+    dateInput.addEventListener("change", update);
+    eventInput.addEventListener("input", update);
+    platformInput.addEventListener("change", update);
+    accountInput.addEventListener("change", update);
+    statusSelect.addEventListener("change", update);
+
+    visualinput.addEventListener('input', update)
+    headerinput.addEventListener('input', update)
+    subheaderinput.addEventListener('input', update)
+    captioninput.addEventListener('input', update)
+    hashtagsinput.addEventListener('input', update)
+    creativesinput.addEventListener('input', update)
+    campaigninput.addEventListener('input', update)
+    noteinput.addEventListener('input', update)
+    fileInput.addEventListener('input', update)
+    doneBtn.addEventListener('click', ()=>{
+      // Remove from contentEvents
+      const index = contentEvents.findIndex(e => e.id === id);
+      if (index !== -1) {
+        contentEvents.splice(index, 1);
+        renderCalendar();
+      }
+      console.log(id)
+      // Remove row from table
+      row.remove();
+    })
+
+
+  }, 0);
+}
+
+function clearCells(){
+  contentEvents = []
+}
+
+function updateCalendarEvent({ id, date, title, platform, account }) {
+  if (!id || !date || !title || !platform || !account) return;
+
+  const existingIndex = contentEvents.findIndex(e => e.id === id);
+  const newEvent = { id, date, title, platform, account };
+
+  if (existingIndex !== -1) {
+    contentEvents[existingIndex] = newEvent;
+  } else {
+    contentEvents.push(newEvent);
+  }
+
+  renderCalendar();
+}
+function renderCalendar() {
+  const calendar = document.getElementById("calendar");
+  const monthSelect = document.getElementById("calendarMonth");
+  const yearSelect = document.getElementById("calendarYear");
+
+  const selectedMonth = parseInt(monthSelect.value);
+  const selectedYear = parseInt(yearSelect.value);
+
+  calendar.innerHTML = "";
+
+  const firstDay = new Date(selectedYear, selectedMonth, 1);
+  const lastDay = new Date(selectedYear, selectedMonth + 1, 0);
+  const daysInMonth = lastDay.getDate();
+
+  for (let i = 1; i <= daysInMonth; i++) {
+    const dateStr = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+
+    const cell = document.createElement("div");
+    cell.className = "calendar-cell";
+    cell.innerHTML = `<strong>${i}</strong>`;
+
+    const eventsToday = contentEvents.filter(e => e.date === dateStr);
+    eventsToday.forEach(e => {
+      const note = document.createElement("div");
+      note.id = 'cells'
+      note.className = `calendar-event ${e.platform.toLowerCase()}`;
+      note.textContent = `${e.title} - ${e.account}`;
+      cell.appendChild(note);
+    });
+
+    calendar.appendChild(cell);
+  }
+}
+
+
+function populateYears(start = 2025, range = 10) {
+  const yearSelect = document.getElementById("calendarYear");
+  const currentYear = new Date().getFullYear();
+
+  for (let i = 0; i < range; i++) {
+    const year = start + i;
+    const option = document.createElement("option");
+    option.value = year;
+    option.textContent = year;
+    if (year === currentYear) option.selected = true;
+    yearSelect.appendChild(option);
+  }
+}
+
+function initCalendarControls() {
+  populateYears();
+  document.getElementById("calendarMonth").value = new Date().getMonth();
+  document.getElementById("calendarMonth").addEventListener("change", renderCalendar);
+  document.getElementById("calendarYear").addEventListener("change", renderCalendar);
+  renderCalendar();
+}
+
+initCalendarControls();
+
+function openCreateModal() {
+  document.getElementById("createModal").style.display = "flex";
+}
+
+function closeCreateModal() {
+  document.getElementById("createModal").style.display = "none";
+}
+
+function openArchive() {
+  document.getElementById("archiveModal").style.display = "flex";
+}
+
+function closeArchive() {
+  document.getElementById("archiveModal").style.display = "none";
+}
+
+
+</script>
+</body>
+</html>

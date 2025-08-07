@@ -1,15 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+   <link rel="icon" href="favicon.ico" type="image/ico">
   <meta charset="UTF-8">
   <title>TCL Live Host Calendar</title>
   <link rel="stylesheet" href="calendar.css">
 </head>
 <body>
   <header>
-    <h1>TCL | Live Schedule Calendar</h1>
+    <img src="menu1.png" height="50px" align="left" id="menuToggle">
+    <h1>TCL | Live Schedule Calendar</h1> </div>
   </header>
 
+  <div id="sidebar" class="sidebar hidden">
+    <img src="tcl_logo.png" height="50px" id="tclogo" align="right"><br> <br>
+  <ul>
+    <li><a href="TCL_index.html">Dashboard</a></li>
+    <li><a href="TCL_creative.html">Creative Asset Tracker</a></li>
+    <li><a href="TCLcalendar.html">Calendar</a></li>
+    <li> <a href="digitalmarket.html">Digital Market Tracker</a></li>
+    <li><a href="TCLpayout.html">Payout Tracker</a></li>
+    <li><a href="TCLcsr.html">Customer Service</a></li>
+  
+  <a href="index.html"> <img src="logout.png" height="50px" id="logoutICON" > </a>
+  </div>
   <main>
     <section class="calendar-controls">
       <button onclick="prevMonth()">&lt;</button>
@@ -21,26 +35,357 @@
       <!-- Calendar days will be generated here -->
     </section>
   </main>
-
-  <div id="eventModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <h2>Add/Edit Livestream</h2>
-      <form id="eventForm">
-        <input type="text" placeholder="Host Name" id="host" required />
-        <input type="text" placeholder="Topic" id="topic" required />
-        <input type="time" id="time" required />
-        <select id="platform">
-          <option>Shopee</option>
-          <option>TikTok</option>
-          <option>Lazada</option>
-        </select>
-        <input type="hidden" id="eventDate">
-        <button type="submit">Save</button>
-      </form>
-    </div>
+<div id="eventModal" class="modal">
+  <div class="modal-content" id="livestreamForm">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2>Add/Edit Livestream</h2>
+    <form id="eventForm">
+      <input type="text" placeholder="Host Name" id="host" required />
+      <input type="text" placeholder="Topic" id="topic" required />
+      <input type="time" id="time" required />
+      <select id="platform">
+        <option>Shopee</option>
+        <option>TikTok</option>
+        <option>Lazada</option>
+      </select>
+      <input type="hidden" id="eventDate">
+      <button type="submit">Save</button>
+      <button type="button" id="deleteEventBtn" style="display: none; background-color: #d60000; color: white;">Delete</button>
+      <div class="modal-nav">
+        <button type="button" onclick="showLeaveForm()">➡</button>
+        
+        
+      </div>
+    </form>
   </div>
 
-  <script src="calendar.js"></script>
+  <div class="modal-content" id="leaveForm" style="display: none;">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2>Request Leave</h2>
+    <form id="leaveRequestForm">
+      <input type="text" placeholder="Employee Name" id="employeeName" required />
+      <input type="text" placeholder="Reason" id="reason" required />
+      <input type="hidden" id="leaveDate">
+      <button type="submit">Save Leave</button>
+      <button type="button" id="deleteLeaveBtn" style="display: none; background-color: #d60000; color: white;">Delete Leave</button>
+      <div class="modal-nav">
+        <button type="button" onclick="showLivestreamForm()">⬅</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+  <script>
+  const menuBtn = document.getElementById("menuToggle");
+  const sidebar = document.getElementById("sidebar");
+
+  // Show sidebar on image click
+  menuBtn.addEventListener("click", (e) => {
+    e.stopPropagation(); // Prevent body click from firing
+    sidebar.classList.remove("hidden");
+  });
+
+  // Hide sidebar if clicked outside
+  document.body.addEventListener("click", (e) => {
+    if (!sidebar.contains(e.target) && e.target !== menuBtn) {
+      sidebar.classList.add("hidden");
+    }
+  });
+</script>
+
+  <script>
+let currentDate = new Date();
+const monthYear = document.getElementById('monthYear');
+const calendar = document.getElementById('calendar');
+const modal = document.getElementById('eventModal');
+const eventForm = document.getElementById('eventForm');
+
+const deleteEventBtn = document.getElementById('deleteEventBtn');
+const deleteLeaveBtn = document.getElementById('deleteLeaveBtn');
+
+let events = {}; // Store livestream events
+let leaves = {}; // Store leave requests
+
+async function renderCalendar() {
+  const res = await fetch('/api/get_calendar')
+  const data = await res.json()
+
+  const res1 = await fetch('/api/get_leave')
+  const data1 = await res1.json()
+
+  if(data.length != 0){
+    events = data[0].date[0][0]
+  }
+
+  if(data1.length != 0){
+    leaves = data1[0].date[0][0]
+  }
+
+  calendar.innerHTML = '';
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  monthYear.innerText = currentDate.toLocaleString('default', { month: 'long' }) + " " + year;
+
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  for (let d of dayNames) {
+    const div = document.createElement('div');
+    div.className = 'day';
+    div.innerText = d;
+    calendar.appendChild(div);
+  }
+
+  for (let i = 0; i < firstDay; i++) {
+    calendar.appendChild(document.createElement('div'));
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateKey = `${year}-${month + 1}-${day}`;
+    const div = document.createElement('div');
+    div.innerText = day;
+
+    // Show livestream events
+    if (events[dateKey]) {
+      for (let ev of events[dateKey]) {
+        const evDiv = document.createElement('div');
+        evDiv.className = 'event';
+        evDiv.innerText = `
+        Platform: ${ev.platform}
+        Topic: ${ev.topic}
+        Host: ${ev.host}
+        Time : ${ev.time}
+        `;
+        evDiv.dataset.dateKey = dateKey;
+        evDiv.dataset.eventIndex = events[dateKey].indexOf(ev);
+        evDiv.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openModal(dateKey, events[dateKey].indexOf(ev));
+        });
+        div.appendChild(evDiv);
+      }
+    }
+
+    // Show leave requests
+    if (leaves[dateKey]) {
+  for (let lv of leaves[dateKey]) {
+    const leaveDiv = document.createElement('div');
+    leaveDiv.className = 'event';
+    leaveDiv.style.backgroundColor = '#e67e22'; // Orange
+    leaveDiv.innerText = `
+    Name: ${lv.employee}
+    Reason: ${lv.reason}
+    `;
+
+    leaveDiv.addEventListener('click', (e) => {
+      e.stopPropagation();
+      modal.style.display = 'block';
+      showLeaveForm();
+      document.getElementById('leaveDate').value = dateKey;
+      document.getElementById('employeeName').value = lv.employee;
+      document.getElementById('reason').value = lv.reason;
+    });
+
+    div.appendChild(leaveDiv);
+  }
+}
+
+
+    div.addEventListener('click', () => openModal(dateKey));
+    calendar.appendChild(div);
+  }
+}
+
+function prevMonth() {
+  currentDate.setMonth(currentDate.getMonth() - 1);
+  renderCalendar();
+}
+
+function nextMonth() {
+  currentDate.setMonth(currentDate.getMonth() + 1);
+  renderCalendar();
+}
+
+function openModal(dateKey, eventIndex = null) {
+  modal.style.display = 'block';
+  document.getElementById('eventDate').value = dateKey;
+  document.getElementById('leaveDate').value = dateKey;
+  modal.dataset.eventIndex = eventIndex;
+
+  showLivestreamForm();
+
+  if (eventIndex !== null) {
+    const event = events[dateKey][eventIndex];
+    document.getElementById('host').value = event.host;
+    document.getElementById('topic').value = event.topic;
+    document.getElementById('time').value = event.time;
+    document.getElementById('platform').value = event.platform;
+
+    deleteEventBtn.style.display = 'block';
+    deleteLeaveBtn.style.display = 'none';
+  } else {
+    eventForm.reset();
+    deleteEventBtn.style.display = 'none';
+    deleteLeaveBtn.style.display = 'none';
+  }
+}
+
+function closeModal() {
+  modal.style.display = 'none';
+  eventForm.reset();
+  document.getElementById('leaveRequestForm').reset();
+}
+
+// Switch form functions
+function showLeaveForm() {
+  document.getElementById("livestreamForm").style.display = "none";
+  document.getElementById("leaveForm").style.display = "block";
+  deleteEventBtn.style.display = "none";
+  deleteLeaveBtn.style.display = "block";
+}
+
+function showLivestreamForm() {
+  document.getElementById("leaveForm").style.display = "none";
+  document.getElementById("livestreamForm").style.display = "block";
+}
+
+// Handle livestream form submission
+eventForm.addEventListener('submit', function (e) {
+  e.preventDefault();
+  const host = document.getElementById('host').value;
+  const topic = document.getElementById('topic').value;
+  const time = document.getElementById('time').value;
+  const platform = document.getElementById('platform').value;
+  const date = document.getElementById('eventDate').value;
+  const eventIndex = modal.dataset.eventIndex;
+
+  if (!events[date]) events[date] = [];
+
+  if (eventIndex !== "null" && eventIndex !== undefined) {
+    events[date][eventIndex] = { host, topic, time, platform };
+  } else {
+    events[date].push({ host, topic, time, platform });
+  }
+
+  closeModal();
+  renderCalendar();
+
+  data = {
+    date: events
+  }
+
+  jsonData = JSON.stringify(data)
+
+  xhr = new XMLHttpRequest()
+  xhr.open("POST", "/api/live_calendar", true)
+  xhr.setRequestHeader("Content-type", "application/json")
+  xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200){
+          console.log('Data Sent Successfully')
+      }
+  }
+
+  xhr.send(jsonData)
+});
+
+// Handle leave form submission
+document.getElementById('leaveRequestForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const employeeName = document.getElementById('employeeName').value;
+  const reason = document.getElementById('reason').value;
+  const date = document.getElementById('leaveDate').value;
+
+  if (!leaves[date]) leaves[date] = [];
+  leaves[date].push({ employee: employeeName, reason });
+
+  closeModal();
+  renderCalendar();
+
+    data = {
+    date: leaves
+  }
+
+  jsonData = JSON.stringify(data)
+
+  xhr = new XMLHttpRequest()
+  xhr.open("POST", "/api/leave_calendar", true)
+  xhr.setRequestHeader("Content-type", "application/json")
+  xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200){
+          console.log('Data Sent Successfully')
+      }
+  }
+
+  xhr.send(jsonData)
+});
+
+// Handle deleting livestream
+deleteEventBtn.addEventListener('click', function () {
+  const date = document.getElementById('eventDate').value;
+  const eventIndex = modal.dataset.eventIndex;
+
+  if (eventIndex !== null && events[date]) {
+    events[date].splice(eventIndex, 1);
+    if (events[date].length === 0) delete events[date];
+  }
+
+  closeModal();
+  renderCalendar();
+
+    data = {
+    date: events
+  }
+
+  jsonData = JSON.stringify(data)
+
+  xhr = new XMLHttpRequest()
+  xhr.open("POST", "/api/live_calendar", true)
+  xhr.setRequestHeader("Content-type", "application/json")
+  xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200){
+          console.log('Data Sent Successfully')
+      }
+  }
+
+  xhr.send(jsonData)
+});
+
+// Handle deleting leave (based on employee name)
+deleteLeaveBtn.addEventListener('click', function () {
+  const date = document.getElementById('leaveDate').value;
+  const employeeName = document.getElementById('employeeName').value;
+
+  if (leaves[date]) {
+    leaves[date] = leaves[date].filter(lv => lv.employee !== employeeName);
+    if (leaves[date].length === 0) delete leaves[date];
+  }
+
+  closeModal();
+  renderCalendar();
+
+  data = {
+    date: leaves
+  }
+
+  jsonData = JSON.stringify(data)
+
+  xhr = new XMLHttpRequest()
+  xhr.open("POST", "/api/leave_calendar", true)
+  xhr.setRequestHeader("Content-type", "application/json")
+  xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200){
+          console.log('Data Sent Successfully')
+      }
+  }
+
+  xhr.send(jsonData)
+});
+
+renderCalendar();
+
+  </script>
 </body>
 </html>

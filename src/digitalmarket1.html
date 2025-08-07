@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Digital Marketing Tracker</title>
+  <link rel="stylesheet" href="marketing-style.css">
+  <link rel="icon" href="favicon.ico" type="image/ico">
+</head>
+<body>
+
+<header>
+  <img src="menu1.png" height="50px" align="left" id="menuToggle">
+  <h1>Digital Marketing Tracker</h1>
+</header>
+
+<div id="sidebar" class="sidebar hidden">
+  <img src="tcl_logo.png" height="50px" id="tclogo" align="right"><br><br>
+  <ul>
+    <li><a href="TCL_index.html">Dashboard</a></li>
+    <li><a href="TCL_creative.html">Creative Asset Tracker</a></li>
+    <li><a href="TCLcalendar.html">Calendar</a></li>
+    <li><a href="TCL_leaveCalendar.html">Leave Calendar</a></li>
+    <li><a href="digitalmarket.html">Digital Market Tracker</a></li>
+    <li><a href="TCLpayout.html">Payout Tracker</a></li>
+    <li><a href="TCLcsr.html">Customer Service</a></li>
+    <a href="login_TCL.html"><img src="logout.png" height="50px" id="logoutICON"></a>
+  </ul>
+</div>
+
+<!-- TAB BUTTONS -->
+<div class="tab-buttons">
+  <button class="tab-btn active" onclick="switchTab('marketingTab')">Digital Marketing</button>
+  <button class="tab-btn" onclick="switchTab('contentCalendarTab')">Content Calendar</button>
+  <button class="tab-btn" onclick="switchTab('calendarTab')">Calendar View</button>
+</div>
+
+<!-- MARKETING TAB -->
+<div id="marketingTab" class="tab-content" style="display: block;">
+  <section class="add-campaign">
+    <h3>Add New Campaign</h3>
+    <input type="text" id="campaignName" placeholder="Campaign Name">
+    <input type="date" id="executionDate">
+    <input type="text" id="budget" placeholder="Budget (₱)">
+    <input type="url" id="link" placeholder="Link (optional)">
+    <textarea id="notes" placeholder="Performance Notes"></textarea>
+    <button onclick="addCampaign()">Add Campaign</button>
+  </section>
+
+ <section class="campaign-list">
+  <h2>Scheduled Marketing Campaigns</h2>
+  <table class="campaign-table">
+    <thead>
+      <tr>
+        <th class="campaign-col">Campaign</th>
+        <th class="date-col">Date</th>
+        <th class="budget-col">Budget</th>
+        <th class="link-col">Link</th>
+        <th class="notes-col">Notes</th>
+        <th class="actions-col">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="campaignBody"></tbody>
+  </table>
+</section>
+
+</div>
+
+<!-- CONTENT CALENDAR TAB -->
+<div id="contentCalendarTab" class="tab-content" style="display: none;">
+  <section class="campaign-list">
+    <h2>Content Calendar</h2>
+    <table id="contentTable">
+      <thead>
+        <tr>
+          <th>Schedule</th>
+          <th>Account</th>
+          <th>Platform</th>
+          <th>Event</th>
+          <th>Visual Concept</th>
+          <th>Header</th>
+          <th>Subheader</th>
+          <th>Caption</th>
+          <th>Hashtags</th>
+          <th>Creatives/Video Link</th>
+          <th>Thumbnail</th>
+          <th>View Image</th>
+          <th>Campaign Period</th>
+          <th>Notes</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="contentBody"></tbody>
+    </table>
+    <button onclick="addContentRow()" class="add-content-btn">Add Content</button>
+    <div class="calendar-actions">
+  <button onclick="openCreateModal()">Create New</button>
+  <button onclick="openArchive()">View Archive</button>
+</div>
+
+<!-- Create New Modal -->
+<div id="createModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <h3>Create New Entry</h3>
+    <input type="text" id="newEntryName" placeholder="Enter name">
+    <button class="Back2Back" onclick="submitCreate()">Submit</button>
+    <button class="Back2Back" onclick="closeCreateModal()">Back</button>
+  </div>
+</div>
+
+<div id="archiveModal" class="modal" style="display: none;">
+  <div class="modal-content" style="max-width: 700px;">
+    <h3>Archived Entries</h3>
+    <table class="archive-table">
+      <thead>
+        <tr>
+          <th>Entry Name</th>
+          <th></th>
+          <th></th>
+          <th></th>
+          
+        </tr>
+      </thead>
+      <tbody id="archiveList">
+        <tr class="archive-row">
+          <td>August Calendar</td>
+          <td></td>
+          <td></td>
+          <td><button id="deleteArchive"> Delete</button></td>
+        </tr>
+        
+      </tbody>
+
+      <tbody id="archiveList">
+        <tr class="archive-row">
+          <td>August Calendar</td>
+          <td></td>
+          <td></td>
+          <td><button id="deleteArchive"> Delete</button></td>
+        </tr>
+        
+      </tbody>
+    </table>
+    <button class="Back2Back" onclick="closeArchive()">Back</button>
+  </div>
+</div>
+  </section>
+</div>
+
+<!-- CALENDAR VIEW TAB -->
+<div id="calendarTab" class="tab-content" style="display: none;">
+  <h2>Content Calendar View</h2>
+
+<div class="calendar-controls">
+  <label for="calendarMonth">Month:</label>
+  <select id="calendarMonth">
+    <option value="0">January</option>
+    <option value="1">February</option>
+    <option value="2">March</option>
+    <option value="3">April</option>
+    <option value="4">May</option>
+    <option value="5">June</option>
+    <option value="6">July</option>
+    <option value="7">August</option>
+    <option value="8">September</option>
+    <option value="9">October</option>
+    <option value="10">November</option>
+    <option value="11">December</option>
+  </select>
+
+  <label for="calendarYear">Year:</label>
+  <select id="calendarYear">
+    <!-- Years generated by JS -->
+  </select>
+</div>
+
+<div id="calendar" class="calendar-grid"></div>
+
+
+<!-- SIDEBAR TOGGLE SCRIPT -->
+<script>
+  const menuBtn = document.getElementById("menuToggle");
+  const sidebar = document.getElementById("sidebar");
+
+  menuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    sidebar.classList.remove("hidden");
+  });
+
+  document.body.addEventListener("click", (e) => {
+    if (!sidebar.contains(e.target) && e.target !== menuBtn) {
+      sidebar.classList.add("hidden");
+    }
+  });
+
+  function switchTab(tabId) {
+    const tabs = document.querySelectorAll('.tab-content');
+    const buttons = document.querySelectorAll('.tab-btn');
+
+    tabs.forEach(tab => tab.style.display = 'none');
+    buttons.forEach(btn => btn.classList.remove('active'));
+
+    document.getElementById(tabId).style.display = 'block';
+    event.target.classList.add('active');
+
+    if (tabId === "calendarTab") renderCalendar();
+  }
+</script>
+
+<script src="marketing-script.js"></script>
+</body>
+</html>

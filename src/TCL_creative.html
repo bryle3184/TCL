@@ -1,14 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+   <link rel="icon" href="favicon.ico" type="image/ico">
   <meta charset="UTF-8">
   <title>Creative Asset Tracker</title>
   <link rel="stylesheet" href="TCL_creativestyles.css">
 </head>
 <body>
+  
   <header>
+   <img src="menu1.png" height="50px" align="left" id="menuToggle">
     <h1>Creative Asset Tracker</h1>
+    </div>
   </header>
+  
+  <div id="sidebar" class="sidebar hidden">
+    <img src="tcl_logo.png" height="50px" id="tclogo" align="right"><br> <br>
+  <ul>
+    <li><a href="TCL_index.html">Dashboard</a></li>
+    <li><a href="TCL_creative.html">Creative Asset Tracker</a></li>
+    <li><a href="TCLcalendar.html">Calendar</a></li>
+    <li> <a href="digitalmarket.html">Digital Market Tracker</a></li>
+    <li><a href="TCLpayout.html">Payout Tracker</a></li>
+    <li><a href="TCLcsr.html">Customer Service</a></li>
+  
+  <a href="index.html"> <img src="logout.png" height="50px" id="logoutICON" > </a>
+  </div>
 
   <section class="filters">
     <select id="platformFilter">
@@ -21,8 +38,8 @@
     <select id="statusFilter">
       <option value="all">All Statuses</option>
       <option value="Pending">Pending</option>
-      <option value="In Design">In Design</option>
-      <option value="For Approval">For Approval</option>
+      <option value="In-Design">In-Design</option>
+      <option value="For-Approval">For-Approval</option>
       <option value="Done">Done</option>
     </select>
 
@@ -36,22 +53,62 @@
   <section class="upload-section">
     <h2>Upload New Creative Request</h2>
     <form id="uploadForm">
-      <input type="text" placeholder="Campaign Name" required>
-      <select required>
+      <input type="text" placeholder="Campaign Name" required id="campaignName">
+      <select required id="platformOption">
         <option disabled selected>Choose Platform</option>
-        <option>Shopee</option>
-        <option>TikTok</option>
-        <option>Lazada</option>
+        <option value="Shoppee">Shopee</option>
+        <option value="TikTok">TikTok</option>
+        <option value="Lazada">Lazada</option>
       </select>
-      <select required>
+      <select required id="statusOption">
         <option disabled selected>Choose Status</option>
-        <option>Pending</option>
-        <option>In Design</option>
-        <option>For Approval</option>
-        <option>Done</option>
+        <option value="Pending">Pending</option>
+        <option value="In-Design">In-Design</option>
+        <option value="For-Approval">For-Approval</option>
+        <option value="Done">Done</option>
       </select>
-      <input type="file" required>
-      <button type="submit">Upload</button>
+      <input type="file" id="fileInput">
+      <button type="button" onclick="createAsset()">Upload</button>
+<script>
+  async function createAsset(){
+    const campaignName = document.getElementById('campaignName')
+    const statusOption = document.getElementById('statusOption')
+    const platformOption = document.getElementById('platformOption')
+    const fileInput = document.getElementById('fileInput')
+    const file = fileInput.files[0]
+
+    const formData = new FormData()
+    formData.append('campaign', campaignName.value)
+    formData.append('platform', platformOption.value)
+    formData.append('status', statusOption.value)
+    formData.append('file', fileInput.value)
+    // formData.append('link', '')
+    formData.append('files', file)
+
+    // data = {
+    //   campaign: campaignName.value,
+    //   platform: platformOption.value,
+    //   status: statusOption.value,
+    //   file: fileInput.value,
+    //   files: file,
+    //   link: ''
+    // }
+
+    // jsonData = JSON.stringify(data)
+
+      xhr = new XMLHttpRequest()
+      xhr.open("POST", "/api/insertCreativeAssets", true)
+    //   xhr.setRequestHeader("Content-type", "application/json")
+      xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200){
+      console.log('Data Sent Successfully')
+      }
+    }
+
+    xhr.send(formData)
+    location.reload()
+  }
+</script>
     </form>
   </section>
 
@@ -59,7 +116,6 @@
     <table>
       <thead>
         <tr>
-          <th><input type="checkbox" /></th>
           <th>Campaign Name</th>
           <th>Platform</th>
           <th>Status</th>
@@ -67,9 +123,9 @@
           <th>Operation</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td><input type="checkbox" /></td>
+      <tbody id="creativeList">
+        <!-- <tr>
+    
           <td>Valentine Promo Banner</td>
           <td>Shopee</td>
           <td><span class="status pending">Pending</span></td>
@@ -77,7 +133,7 @@
           <td><a href="#">Detail</a></td>
         </tr>
         <tr>
-          <td><input type="checkbox" /></td>
+          
           <td>Midyear Sale Ad</td>
           <td>TikTok</td>
           <td><span class="status in-design">In Design</span></td>
@@ -85,7 +141,7 @@
           <td><a href="#">Detail</a></td>
         </tr>
         <tr>
-          <td><input type="checkbox" /></td>
+          
           <td>Lazada Payday Poster</td>
           <td>Lazada</td>
           <td><span class="status approval">For Approval</span></td>
@@ -93,17 +149,181 @@
           <td><a href="#">Detail</a></td>
         </tr>
         <tr>
-          <td><input type="checkbox" /></td>
+         
           <td>Back to School Visual</td>
           <td>Shopee</td>
           <td><span class="status done">Done</span></td>
           <td>b2school.jpg</td>
           <td><a href="#">Detail</a></td>
-        </tr>
+        </tr> -->
       </tbody>
     </table>
   </div>
+  <script>
+  const menuBtn = document.getElementById("menuToggle");
+  const sidebar = document.getElementById("sidebar");
 
-  <script src="creative-script.js"></script>
+  // Show sidebar on image click
+  menuBtn.addEventListener("click", (e) => {
+    e.stopPropagation(); // Prevent body click from firing
+    sidebar.classList.remove("hidden");
+  });
+
+  // Hide sidebar if clicked outside
+  document.body.addEventListener("click", (e) => {
+    if (!sidebar.contains(e.target) && e.target !== menuBtn) {
+      sidebar.classList.add("hidden");
+    }
+  });
+</script>
+
+  <script>
+const assetList = document.getElementById('assetList');
+const platformFilter = document.getElementById('platformFilter');
+const statusFilter = document.getElementById('statusFilter');
+const searchInput = document.getElementById('searchInput');
+
+let creativeTasks = [];
+
+async function fetchData(){
+  const res = await fetch('/api/getCreativeAssets')
+  const data = await res.json()
+
+  for (let index = 0; index < data.length; index++) {
+    const assets = {
+      id: data[index]._id,
+      campaign: data[index].campaign,
+      platform: data[index].platform,
+      status: data[index].status,
+      file: data[index].file,
+      link: data[index].link
+    }
+
+    creativeTasks.push(assets)
+  }
+  displayAssetRow()
+  displayAssets()
+}
+
+fetchData()
+
+function displayAssetRow(){
+  const creativeList = document.getElementById('creativeList')
+
+  for (let index = 0; index < creativeTasks.length; index++) {
+    const row = document.createElement('tr')
+
+    row.innerHTML = `   
+    <td>${creativeTasks[index].campaign}</td>
+    <td>${creativeTasks[index].platform}</td>
+    <td><span class="status ${creativeTasks[index].status}">${creativeTasks[index].status}</span></td>
+    <td>${creativeTasks[index].file}</td>
+    <td><a href="${creativeTasks[index].link}">Detail</a></td>
+    `
+
+    creativeList.append(row)
+  }
+}
+
+displayAssetRow()
+
+function displayAssets() {
+  assetList.innerHTML = '';
+
+  const platformVal = platformFilter.value;
+  const statusVal = statusFilter.value;
+  const searchVal = searchInput.value.toLowerCase();
+
+  creativeTasks
+    .filter(item =>
+      (platformVal === "all" || item.platform === platformVal) &&
+      (statusVal === "all" || item.status === statusVal) &&
+      (item.campaign.toLowerCase().includes(searchVal))
+    )
+    .forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'asset-card';
+      card.dataset.id = item.id;
+
+      const statusOptions = ['Pending', 'In-Design', 'For-Approval', 'Done']
+        .map(option => `<option value="${option}" ${option === item.status ? 'selected' : ''}>${option}</option>`)
+        .join('');
+
+      card.innerHTML = `
+        <h3>${item.campaign}</h3>
+        <p><strong>Platform:</strong> ${item.platform}</p>
+        <select class="status-select">
+          ${statusOptions}
+        </select>
+        <button class="done-btn" style="display: ${item.status === 'Done' ? 'block' : 'none'};">Done</button>
+        <div class="actions">
+          
+        </div>
+      `;
+
+      const statusSelect = card.querySelector('.status-select');
+      const doneBtn = card.querySelector('.done-btn');
+
+      statusSelect.addEventListener('change', (e) => {
+        item.status = e.target.value;
+        const data = {
+          id: item.id,
+          status: e.target.value
+        }
+
+            jsonData = JSON.stringify(data)
+            xhr = new XMLHttpRequest()
+            xhr.open("POST", "/api/updateCreativeAssets", true)
+            xhr.setRequestHeader("Content-type", "application/json")
+            xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200){
+            console.log('Data Sent Successfully')
+            }
+        }
+
+        xhr.send(jsonData)
+
+        doneBtn.style.display = item.status === 'Done' ? 'block' : 'none';
+
+        location.reload()
+      });
+
+      doneBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to remove this completed task?')) {
+          creativeTasks = creativeTasks.filter(t => t.id !== item.id);
+          console.log(item.id)
+
+          data = {
+              id: item.id
+          }
+
+          jsonData = JSON.stringify(data)
+            xhr = new XMLHttpRequest()
+            xhr.open("POST", "/api/deleteCreativeAssets", true)
+            xhr.setRequestHeader("Content-type", "application/json")
+            xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200){
+            console.log('Data Sent Successfully')
+            }
+          }
+
+          xhr.send(jsonData)
+          location.reload()
+
+          displayAssets();
+        }
+      });
+
+      assetList.appendChild(card);
+    });
+}
+
+platformFilter.addEventListener('change', displayAssets);
+statusFilter.addEventListener('change', displayAssets);
+searchInput.addEventListener('input', displayAssets);
+
+displayAssets();
+
+  </script>
 </body>
 </html>

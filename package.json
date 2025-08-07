@@ -9,16 +9,26 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "��#\u0000 \u0000T\u0000C\u0000L\u0000\r\u0000 \u0000\"# TCL\"",
   "dependencies": {
+    "body-parser": "^2.2.0",
     "bootstrap": "^5.3.7",
     "dotenv": "^17.0.0",
     "express": "^5.1.0",
     "git": "^0.1.5",
     "lodash": "^4.17.21",
-    "mongoose": "^8.16.1"
+    "mongoose": "^8.16.3",
+    "multer": "^2.0.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bryle3184/TCL.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bryle3184/TCL/issues"
+  },
+  "homepage": "https://github.com/bryle3184/TCL#readme"
 }

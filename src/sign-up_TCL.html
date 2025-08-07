@@ -18,14 +18,27 @@
         <form method="post" action="">
           <input id="name" name="name" type="text" placeholder="Name" required>
           <input id="username" name="username" type="text" placeholder="Username or Email" required>
-          <input id="birthday" name="birthday" type="text" placeholder="Birthday (MM/DY/YR)" required>
+          <input id="birthday" name="birthday" type="date" placeholder="Birthday" required>
           <input id="password" name="password" type="password" placeholder="Password" required>
-          
+          <select name="role" required>
+            <option disabled selected>Select Role</option>
+            <option>Head of Ecommerce Manager</option>
+            <option>Ecommerce Supervisor</option>
+            <option>TikTok Operator</option>
+            <option>Sales Channel Operators </option>
+            <option>Shopee Operator</option>
+            <option>Lazada Operator</option>
+            <option>Digital Marketing</option>
+            <option>Graphic Artists</option>
+            <option>Customer Service</option>
+            <option>Live Hosts</option>
+            
+          </select>
           <div class="options">
     
           </div>
           <input type="submit" id="register" value="Register" /> <br>
-
+          <a href="index.html"><input type="button" id="register" value="Log-in" /> <br></a>
         </form>
       </div>
     </div>
