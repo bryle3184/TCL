@@ -1,0 +1,16 @@
+import type { Metadata } from "next";
+import { AuthLayout } from "@/components/auth-layout";
+import { SignupForm } from "@/components/auth/signup-form";
+
+export const metadata: Metadata = { title: "Create account" };
+
+export default function SignupPage() {
+  return (
+    <AuthLayout
+      title="Create your account"
+      subtitle="Join the TCL e-commerce workspace with your team role."
+    >
+      <SignupForm />
+    </AuthLayout>
+  );
+}

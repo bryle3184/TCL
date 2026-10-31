@@ -4,7 +4,7 @@ const path = require('path')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 const multer = require('multer')
-const upload = require('../TCL PROJECT/middleware/upload')
+const upload = require('./middleware/upload')
 
 const app = express()
 let user
@@ -12,7 +12,7 @@ let roles
 
 dotenv.config()
 
-const mongurl = process.env.MONGO_URL
+const mongurl = process.env.MONGODB_URI || process.env.MONGO_URL
 
 mongoose.connect(mongurl).then(()=>{console.log('Database Connected!')})
 
